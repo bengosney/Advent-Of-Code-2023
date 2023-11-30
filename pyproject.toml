@@ -1,0 +1,40 @@
+[project]
+name = "advent_of_code"
+version = "2023"
+description = "My answeres to Advent of Code 2023"
+requires-python = ">=3.12"
+dependencies = [
+    "rich",
+    "typer[all]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-testmon",
+    "pytest-watch",
+    "black",
+    "icecream",
+    "mypy",
+    "pip-tools",
+    "pre-commit",
+    "specialist",
+]
+
+[project.urls]
+homepage = "https://github.com/bengosney/Advent-Of-Code-2023"
+repository = "https://github.com/bengosney/Advent-Of-Code-2023"
+
+[project.scripts]
+advent-of-code = "aoc:app"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 128
+target-version = ['py311']
+
+[tool.pycln]
+all = true
