@@ -1,37 +1,36 @@
 # Standard Library
 import re
+from collections.abc import Generator
 
 # First Party
 from utils import no_input_skip, read_input
 
 
 def part_1(input: str) -> int:
-    total = 0
-    for line in input.splitlines():
-        if line == "":
-            continue
-        numbers = [n for n in line if n.isdigit()]
-        num = int("".join([numbers[0], numbers[-1]]))
-        total += num
-    return total
+    def process() -> Generator[int, None, None]:
+        for line in input.splitlines():
+            numbers: list[str] = [n for n in line if n.isdigit()]
+            yield int("".join([numbers[0], numbers[-1]]))
+
+    return sum(process())
 
 
 def part_2(input: str) -> int:
     lookup = {r"one": 1, r"two": 2, r"three": 3, r"four": 4, r"five": 5, r"six": 6, r"seven": 7, r"eight": 8, r"nine": 9}
 
-    total = 0
-    for line in input.splitlines():
-        indexed: list[tuple[int, int]] = []
-        for word, number in lookup.items():
-            for m in re.finditer(word, line):
-                indexed.append((m.start(), number))
-        for m in re.finditer(r"\d", line):
-            indexed.append((m.start(), int(m.group(0))))
+    def process() -> Generator[int, None, None]:
+        for line in input.splitlines():
+            indexed: list[tuple[int, int]] = []
+            for word, number in lookup.items():
+                for m in re.finditer(word, line):
+                    indexed.append((m.start(), number))
+            for m in re.finditer(r"\d", line):
+                indexed.append((m.start(), int(m.group(0))))
 
-        numbers = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
-        num = int("".join([numbers[0], numbers[-1]]))
-        total += num
-    return total
+            numbers: list[str] = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
+            yield int("".join([numbers[0], numbers[-1]]))
+
+    return sum(process())
 
 
 # -- Tests
