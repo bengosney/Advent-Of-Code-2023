@@ -6,7 +6,7 @@ from utils import no_input_skip, read_input
 
 
 def part_1(input: str) -> int:
-    calibration = 0
+    calibration: int = 0
     for line in input.splitlines():
         numbers: list[str] = [n for n in line if n.isdigit()]
         calibration += int("".join([numbers[0], numbers[-1]]))
@@ -15,14 +15,14 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    lookup = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
+    lookup = {k: i for i, k in enumerate(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"], 1)}
     regex = re.compile(rf"(?=({'|'.join(lookup.keys())}|\d))")
 
-    calibration = 0
+    calibration: int = 0
     for line in input.splitlines():
         indexed: list[tuple[int, int]] = []
         for m in regex.finditer(line):
-            char = m.group(1)
+            char: str = m.group(1)
             indexed.append((m.start(), lookup[char] if char in lookup else int(char)))
 
         numbers: list[str] = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
