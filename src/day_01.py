@@ -1,36 +1,34 @@
 # Standard Library
 import re
-from collections.abc import Generator
 
 # First Party
 from utils import no_input_skip, read_input
 
 
 def part_1(input: str) -> int:
-    def process() -> Generator[int, None, None]:
-        for line in input.splitlines():
-            numbers: list[str] = [n for n in line if n.isdigit()]
-            yield int("".join([numbers[0], numbers[-1]]))
+    calibration = 0
+    for line in input.splitlines():
+        numbers: list[str] = [n for n in line if n.isdigit()]
+        calibration += int("".join([numbers[0], numbers[-1]]))
 
-    return sum(process())
+    return calibration
 
 
 def part_2(input: str) -> int:
-    lookup = {r"one": 1, r"two": 2, r"three": 3, r"four": 4, r"five": 5, r"six": 6, r"seven": 7, r"eight": 8, r"nine": 9}
+    lookup = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9}
+    regex = re.compile(rf"(?=({'|'.join(lookup.keys())}|\d))")
 
-    def process() -> Generator[int, None, None]:
-        for line in input.splitlines():
-            indexed: list[tuple[int, int]] = []
-            for word, number in lookup.items():
-                for m in re.finditer(word, line):
-                    indexed.append((m.start(), number))
-            for m in re.finditer(r"\d", line):
-                indexed.append((m.start(), int(m.group(0))))
+    calibration = 0
+    for line in input.splitlines():
+        indexed: list[tuple[int, int]] = []
+        for m in regex.finditer(line):
+            char = m.group(1)
+            indexed.append((m.start(), lookup[char] if char in lookup else int(char)))
 
-            numbers: list[str] = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
-            yield int("".join([numbers[0], numbers[-1]]))
+        numbers: list[str] = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
+        calibration += int("".join([numbers[0], numbers[-1]]))
 
-    return sum(process())
+    return calibration
 
 
 # -- Tests
