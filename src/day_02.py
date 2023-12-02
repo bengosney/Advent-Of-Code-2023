@@ -15,23 +15,8 @@ Limit = namedtuple("Limit", ["max_red", "max_green", "max_blue"])
 class Game:
     id: int
     max_red: int
-    max_blue: int
     max_green: int
-
-    def __int__(self) -> int:
-        return self.id
-
-    def __add__(self, other) -> int:
-        return int(self) + int(other)
-
-    def __eq__(self, other: Limit) -> bool:
-        return all(
-            [
-                self.max_red == other.max_red,
-                self.max_green == other.max_green,
-                self.max_blue == other.max_blue,
-            ]
-        )
+    max_blue: int
 
     def __le__(self, other: Limit) -> bool:
         return all(
@@ -41,6 +26,10 @@ class Game:
                 self.max_blue <= other.max_blue,
             ]
         )
+
+    @property
+    def power(self) -> int:
+        return self.max_red * self.max_green * self.max_blue
 
 
 def parse(input: str) -> Iterable[Game]:
@@ -60,11 +49,12 @@ def part_1(input: str) -> int:
     games = list(parse(input))
     limit = Limit(12, 13, 14)
     filtered_games = filter(lambda game: game <= limit, games)
-    return sum(map(int, filtered_games))
+    return sum(map(lambda g: int(g.id), filtered_games))
 
 
 def part_2(input: str) -> int:
-    pass
+    games = list(parse(input))
+    return sum(map(lambda g: g.power, games))
 
 
 # -- Tests
@@ -83,9 +73,9 @@ def test_part_1():
     assert part_1(test_input) == 8
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 2286
 
 
 @no_input_skip
