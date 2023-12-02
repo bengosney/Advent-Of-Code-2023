@@ -39,7 +39,7 @@ def parse(input: str) -> Iterable[Game]:
         for round in rest.split(";"):
             for group in round.split(","):
                 count, colour = group.split()
-                colours[f"max_{colour}"] = max(colours[f"max_{colour}"], int(count))
+                colours[colour] = max(colours[colour], int(count))
         yield Game(int(id), **colours)
 
 
