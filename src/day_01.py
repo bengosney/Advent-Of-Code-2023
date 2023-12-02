@@ -15,17 +15,15 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    lookup = {k: i for i, k in enumerate(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"], 1)}
+    lookup = {k: str(i) for i, k in enumerate(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"], 1)}
     regex = re.compile(rf"(?=({'|'.join(lookup.keys())}|\d))")
 
     calibration: int = 0
     for line in input.splitlines():
-        indexed: list[tuple[int, int]] = []
+        numbers: list[str] = []
         for m in regex.finditer(line):
             char: str = m.group(1)
-            indexed.append((m.start(), lookup[char] if char in lookup else int(char)))
-
-        numbers: list[str] = [str(i[1]) for i in sorted(indexed, key=lambda i: i[0])]
+            numbers.append(lookup[char] if char in lookup else char)
         calibration += int("".join([numbers[0], numbers[-1]]))
 
     return calibration
