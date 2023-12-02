@@ -2,34 +2,32 @@
 from collections import defaultdict, namedtuple
 from collections.abc import Iterable
 from dataclasses import dataclass
-from functools import total_ordering
 
 # First Party
 from utils import no_input_skip, read_input
 
-Limit = namedtuple("Limit", ["max_red", "max_green", "max_blue"])
+Limit = namedtuple("Limit", ["red", "green", "blue"])
 
 
-@total_ordering
 @dataclass(frozen=True, eq=False)
 class Game:
     id: int
-    max_red: int
-    max_green: int
-    max_blue: int
+    red: int
+    green: int
+    blue: int
 
     def __le__(self, other: Limit) -> bool:
         return all(
             [
-                self.max_red <= other.max_red,
-                self.max_green <= other.max_green,
-                self.max_blue <= other.max_blue,
+                self.red <= other.red,
+                self.green <= other.green,
+                self.blue <= other.blue,
             ]
         )
 
     @property
     def power(self) -> int:
-        return self.max_red * self.max_green * self.max_blue
+        return self.red * self.green * self.blue
 
 
 def parse(input: str) -> Iterable[Game]:
@@ -46,7 +44,7 @@ def parse(input: str) -> Iterable[Game]:
 
 
 def part_1(input: str) -> int:
-    games = list(parse(input))
+    games = parse(input)
     limit = Limit(12, 13, 14)
     filtered_games = filter(lambda game: game <= limit, games)
     return sum(map(lambda g: int(g.id), filtered_games))
@@ -84,10 +82,10 @@ def test_part_1_real():
     assert part_1(real_input) == 1867
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 84538
 
 
 # -- Main
