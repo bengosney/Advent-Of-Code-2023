@@ -35,7 +35,7 @@ def parse(input: str) -> Iterable[Game]:
         game_id, rest = line.split(":")
         _, id = game_id.split()
 
-        colours = defaultdict(int)
+        colours: dict[str, int] = defaultdict(int)
         for round in rest.split(";"):
             for group in round.split(","):
                 count, colour = group.split()
