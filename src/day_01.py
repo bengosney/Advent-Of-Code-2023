@@ -1,32 +1,33 @@
 # Standard Library
 import re
+from collections.abc import Generator
 
 # First Party
 from utils import no_input_skip, read_input
 
 
 def part_1(input: str) -> int:
-    calibration: int = 0
-    for line in input.splitlines():
-        numbers: list[str] = [n for n in line if n.isdigit()]
-        calibration += int("".join([numbers[0], numbers[-1]]))
+    def calibrations() -> Generator[int, None, None]:
+        for line in input.splitlines():
+            numbers: list[str] = [n for n in line if n.isdigit()]
+            yield int("".join([numbers[0], numbers[-1]]))
 
-    return calibration
+    return sum(calibrations())
 
 
 def part_2(input: str) -> int:
     lookup = {k: str(i) for i, k in enumerate(["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"], 1)}
     regex = re.compile(rf"(?=({'|'.join(lookup.keys())}|\d))")
 
-    calibration: int = 0
-    for line in input.splitlines():
-        numbers: list[str] = []
-        for m in regex.finditer(line):
-            char: str = m.group(1)
-            numbers.append(lookup[char] if char in lookup else char)
-        calibration += int("".join([numbers[0], numbers[-1]]))
+    def calibrations() -> Generator[int, None, None]:
+        for line in input.splitlines():
+            numbers: list[str] = []
+            for m in regex.finditer(line):
+                char: str = m.group(1)
+                numbers.append(lookup[char] if char in lookup else char)
+            yield int("".join([numbers[0], numbers[-1]]))
 
-    return calibration
+    return sum(calibrations())
 
 
 # -- Tests
