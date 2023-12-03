@@ -38,10 +38,10 @@ class Grid:
                 yield pair
 
     @classmethod
-    def build(cls, input, default: str = ".") -> Self:
-        grid = cls(default)
+    def build(cls, input) -> Self:
+        grid = cls()
         for y, line in enumerate(input.splitlines()):
-            for x, char in enumerate(filter(lambda c: c != default, line)):
+            for x, char in enumerate(line):
                 grid[x, y] = char
         return grid
 
