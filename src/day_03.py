@@ -3,29 +3,36 @@ from collections import defaultdict, deque
 from collections.abc import Iterable
 from functools import reduce
 from itertools import product
+from typing import Self
 
 # First Party
-from utils import GridType, no_input_skip, read_input
+from utils import no_input_skip, read_input
 
 
 class Grid:
     _width: set[int]
     _height: set[int]
+    _grid: dict[tuple[int, int], str]
 
-    def __init__(self) -> None:
+    def __init__(self, default: str = ".") -> None:
         self._width = set()
         self._height = set()
+        self._grid = defaultdict(lambda: default)
 
-    def add(self, x: int, y: int) -> None:
-        self._width.add(x)
-        self._height.add(y)
+    def __setitem__(self, key: tuple[int, int], value: str) -> None:
+        self._width.add(key[0])
+        self._height.add(key[1])
+        self._grid[key] = value
+
+    def __getitem__(self, key: tuple[int, int]) -> str:
+        return self._grid[key]
 
     @property
-    def width(self):
+    def width(self) -> Iterable[int]:
         return range(min(self._width), max(self._width) + 1)
 
     @property
-    def height(self):
+    def height(self) -> Iterable[int]:
         return range(min(self._height), max(self._height) + 1)
 
     @staticmethod
@@ -34,23 +41,25 @@ class Grid:
             if pair != (x, y):
                 yield pair
 
+    @classmethod
+    def build(cls, input) -> Self:
+        grid = cls()
+        for y, line in enumerate(input.splitlines()):
+            for x, char in enumerate(line):
+                grid[x, y] = char
+        return grid
+
 
 def part_1(input: str) -> int:
-    grid: GridType = defaultdict(lambda: ".")
-    tracker = Grid()
-    for y, line in enumerate(input.splitlines()):
-        for x, char in enumerate(line):
-            tracker.add(x, y)
-            grid[x, y] = char
+    grid = Grid.build(input)
 
     valid = []
-    for y in tracker.height:
+    for y in grid.height:
         collecting = []
         collecting_valid = False
-        for x in tracker.width:
-            cur = grid[x, y]
-            if cur.isnumeric():
-                collecting.append(cur)
+        for x in grid.width:
+            if grid[x, y].isnumeric():
+                collecting.append(grid[x, y])
                 if not collecting_valid:
                     for pair in Grid.around(x, y):
                         collecting_valid |= grid[pair] != "." and not grid[pair].isnumeric()
@@ -66,15 +75,10 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    grid: GridType = defaultdict(lambda: ".")
-    tracker = Grid()
-    for y, line in enumerate(input.splitlines()):
-        for x, char in enumerate(line):
-            tracker.add(x, y)
-            grid[x, y] = char
+    grid = Grid.build(input)
 
-    def collect(x, y) -> int:
-        number = deque()
+    def collect(x: int, y: int) -> int:
+        number: deque[str] = deque()
         cx = x
         while grid[cx, y].isnumeric():
             number.appendleft(grid[cx, y])
@@ -86,16 +90,14 @@ def part_2(input: str) -> int:
         return int("".join(number))
 
     ratio = 0
-    for y in tracker.height:
-        for x in tracker.width:
-            cur = grid[x, y]
-            if cur == "*":
-                numbers = set()
-                for pair in Grid.around(x, y):
-                    if grid[pair].isnumeric():
-                        numbers.add(collect(*pair))
-                if len(numbers) == 2:
-                    ratio += reduce(lambda a, b: a * b, numbers)
+    for loc in product(grid.height, grid.width):
+        if grid[loc] == "*":
+            numbers = set()
+            for pair in Grid.around(*loc):
+                if grid[pair].isnumeric():
+                    numbers.add(collect(*pair))
+            if len(numbers) == 2:
+                ratio += reduce(lambda a, b: a * b, numbers)
 
     return ratio
 
