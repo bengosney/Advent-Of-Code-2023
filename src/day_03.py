@@ -1,10 +1,11 @@
 # Standard Library
-from collections import defaultdict
+from collections import defaultdict, deque
 from collections.abc import Iterable
+from functools import reduce
 from itertools import product
 
 # First Party
-from utils import GridType, draw_grid, no_input_skip, read_input  # noqa
+from utils import GridType, no_input_skip, read_input
 
 
 class Grid:
@@ -65,7 +66,38 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    grid: GridType = defaultdict(lambda: ".")
+    tracker = Grid()
+    for y, line in enumerate(input.splitlines()):
+        for x, char in enumerate(line):
+            tracker.add(x, y)
+            grid[x, y] = char
+
+    def collect(x, y) -> int:
+        number = deque()
+        cx = x
+        while grid[cx, y].isnumeric():
+            number.appendleft(grid[cx, y])
+            cx -= 1
+        cx = x + 1
+        while grid[cx, y].isnumeric():
+            number.append(grid[cx, y])
+            cx += 1
+        return int("".join(number))
+
+    ratio = 0
+    for y in tracker.height:
+        for x in tracker.width:
+            cur = grid[x, y]
+            if cur == "*":
+                numbers = set()
+                for pair in Grid.around(x, y):
+                    if grid[pair].isnumeric():
+                        numbers.add(collect(*pair))
+                if len(numbers) == 2:
+                    ratio += reduce(lambda a, b: a * b, numbers)
+
+    return ratio
 
 
 # -- Tests
