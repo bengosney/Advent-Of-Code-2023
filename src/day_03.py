@@ -49,37 +49,29 @@ class Grid:
 def part_1(input: str) -> int:
     grid = Grid.build(input)
 
-    class Collector:
-        def __init__(self) -> None:
-            self.reset()
-            self.collected = []
+    collected: list[int] = []
+    collecting: list[str] = []
+    valid = False
 
-        def reset(self):
-            self._collecting = []
-            self.valid = False
+    def collect():
+        nonlocal valid, collecting
+        if valid:
+            collected.append(int("".join(collecting)))
+        collecting = []
+        valid = False
 
-        def append(self, value: str) -> None:
-            self._collecting.append(value)
-
-        def collect(self) -> None:
-            if self.valid:
-                self.collected.append(int("".join(self._collecting)))
-            self.reset()
-
-    collector = Collector()
     for y in grid.height:
-        collector.reset()
         for x in grid.width:
             if grid[x, y].isnumeric():
-                collector.append(grid[x, y])
-                if not collector.valid:
+                collecting.append(grid[x, y])
+                if not valid:
                     for pair in Grid.around(x, y):
-                        collector.valid |= grid[pair] != "." and not grid[pair].isnumeric()
+                        valid |= grid[pair] != "." and not grid[pair].isnumeric()
             else:
-                collector.collect()
-        collector.collect()
+                collect()
+        collect()
 
-    return sum(collector.collected)
+    return sum(collected)
 
 
 def part_2(input: str) -> int:
