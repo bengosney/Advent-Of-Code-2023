@@ -2,7 +2,7 @@
 from collections import defaultdict, deque
 from collections.abc import Iterable
 from functools import reduce
-from itertools import product
+from itertools import count, product, takewhile
 from typing import Self
 
 # First Party
@@ -79,14 +79,13 @@ def part_2(input: str) -> int:
 
     def collect_number(x: int, y: int) -> int:
         number: deque[str] = deque()
-        cx = x
-        while grid[cx, y].isnumeric():
-            number.appendleft(grid[cx, y])
-            cx -= 1
-        cx = x + 1
-        while grid[cx, y].isnumeric():
-            number.append(grid[cx, y])
-            cx += 1
+
+        for i in takewhile(lambda i: grid[i, y].isnumeric(), count(x, -1)):
+            number.appendleft(grid[i, y])
+
+        for i in takewhile(lambda i: grid[i, y].isnumeric(), count(x + 1, 1)):
+            number.append(grid[i, y])
+
         return int("".join(number))
 
     ratio = 0
