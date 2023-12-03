@@ -49,31 +49,43 @@ class Grid:
 def part_1(input: str) -> int:
     grid = Grid.build(input)
 
-    valid = []
+    class Collector:
+        def __init__(self) -> None:
+            self.reset()
+            self.collected = []
+
+        def reset(self):
+            self._collecting = []
+            self.valid = False
+
+        def append(self, value: str) -> None:
+            self._collecting.append(value)
+
+        def collect(self) -> None:
+            if self.valid:
+                self.collected.append(int("".join(self._collecting)))
+            self.reset()
+
+    collector = Collector()
     for y in grid.height:
-        collecting = []
-        collecting_valid = False
+        collector.reset()
         for x in grid.width:
             if grid[x, y].isnumeric():
-                collecting.append(grid[x, y])
-                if not collecting_valid:
+                collector.append(grid[x, y])
+                if not collector.valid:
                     for pair in Grid.around(x, y):
-                        collecting_valid |= grid[pair] != "." and not grid[pair].isnumeric()
+                        collector.valid |= grid[pair] != "." and not grid[pair].isnumeric()
             else:
-                if collecting_valid:
-                    valid.append(int("".join(collecting)))
-                collecting = []
-                collecting_valid = False
-        if collecting_valid:
-            valid.append(int("".join(collecting)))
+                collector.collect()
+        collector.collect()
 
-    return sum(valid)
+    return sum(collector.collected)
 
 
 def part_2(input: str) -> int:
     grid = Grid.build(input)
 
-    def collect(x: int, y: int) -> int:
+    def collect_number(x: int, y: int) -> int:
         number: deque[str] = deque()
         cx = x
         while grid[cx, y].isnumeric():
@@ -91,7 +103,7 @@ def part_2(input: str) -> int:
             numbers = set()
             for pair in Grid.around(*loc):
                 if grid[pair].isnumeric():
-                    numbers.add(collect(*pair))
+                    numbers.add(collect_number(*pair))
             if len(numbers) == 2:
                 ratio += reduce(lambda a, b: a * b, numbers)
 
