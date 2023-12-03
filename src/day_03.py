@@ -10,14 +10,10 @@ from utils import no_input_skip, read_input
 
 
 class Grid:
-    _width: set[int]
-    _height: set[int]
-    _grid: dict[tuple[int, int], str]
-
     def __init__(self, default: str = ".") -> None:
-        self._width = set()
-        self._height = set()
-        self._grid = defaultdict(lambda: default)
+        self._width: set[int] = set()
+        self._height: set[int] = set()
+        self._grid: dict[tuple[int, int], str] = defaultdict(lambda: default)
 
     def __setitem__(self, key: tuple[int, int], value: str) -> None:
         self._width.add(key[0])
