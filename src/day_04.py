@@ -47,25 +47,13 @@ def part_1(input: str) -> int:
 
 def part_2(input: str) -> int:
     cards = list(parse(input))
-    card_count = 0
 
     @lru_cache
     def count_cards(card: Card) -> int:
-        wins = 0
-        count = 1
-        for number in card.numbers:
-            if number in card.winning:
-                wins += 1
+        wins = sum([1 for number in card.numbers if number in card.winning])
+        return sum(count_cards(cards[i]) for i in range(card.id, card.id + wins)) + 1
 
-        for i in range(card.id, card.id + wins):
-            count += count_cards(cards[i])
-
-        return count
-
-    for card in cards:
-        card_count += count_cards(card)
-
-    return card_count
+    return sum(count_cards(card) for card in cards)
 
 
 # -- Tests
