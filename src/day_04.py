@@ -1,6 +1,6 @@
 # Standard Library
 import re
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Self
@@ -33,7 +33,7 @@ def parse(input: str) -> Iterable[Card]:
 
 
 def part_1(input: str) -> int:
-    def scores() -> int:
+    def scores() -> Generator[int, None, None]:
         for card in parse(input):
             if score := sum([1 for number in card.numbers if number in card.winning]):
                 yield int(f"1{'0'*(score - 1)}", 2)
