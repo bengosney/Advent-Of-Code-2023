@@ -33,16 +33,12 @@ def parse(input: str) -> Iterable[Card]:
 
 
 def part_1(input: str) -> int:
-    total = 0
-    for card in parse(input):
-        score = 0
-        for number in card.numbers:
-            if number in card.winning:
-                score = score * 2 if score > 0 else 1
+    def scores() -> int:
+        for card in parse(input):
+            if score := sum([1 for number in card.numbers if number in card.winning]):
+                yield int(f"1{'0'*(score - 1)}", 2)
 
-        total += score
-
-    return total
+    return sum(scores())
 
 
 def part_2(input: str) -> int:
