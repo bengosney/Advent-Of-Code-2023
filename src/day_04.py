@@ -1,39 +1,48 @@
-# First Party
-from utils import read_input, no_input_skip # noqa
-from collections import namedtuple
-from icecream import ic
-from dataclasses import dataclass
-
+# Standard Library
 import re
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Self
 
-regex = r"[ ]+"
+# First Party
+from utils import no_input_skip, read_input
 
-Card = namedtuple("Card", ["id", "numbers", "winning"])
 
-def parse(line: str) -> Card:
-    card, numbers = line.split(":")
-    _, id = card.split(" ")
-    ours, winning = numbers.split("|")
-    return Card(
-        id=int(id),
-        numbers=list(map(int, ours.split())),
-        winning=list(map(int, winning.split())),
-    )
+@dataclass
+class Card:
+    id: int
+    numbers: list[int]
+    winning: list[int]
+
+    @classmethod
+    def parse(cls, line: str) -> Self:
+        card, numbers = line.split(":")
+        _, id = card.split(" ")
+        ours, winning = numbers.split("|")
+        return Card(
+            id=int(id),
+            numbers=list(map(int, ours.split())),
+            winning=list(map(int, winning.split())),
+        )
+
+
+def parse(input: str) -> Iterable[Card]:
+    for line in re.sub(r"[ ]+", " ", input, 0, re.MULTILINE).splitlines():
+        yield Card.parse(line)
 
 
 def part_1(input: str) -> int:
-    clean_input = re.sub(regex, " ", input, 0, re.MULTILINE)
     total = 0
-    for line in clean_input.splitlines():
-        card = parse(line)
+    for card in parse(input):
         score = 0
         for number in card.numbers:
             if number in card.winning:
                 score = score * 2 if score > 0 else 1
-        
+
         total += score
 
     return total
+
 
 def part_2(input: str) -> int:
     pass
@@ -57,14 +66,14 @@ def test_part_1():
 
 
 # def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+#    test_input = get_example_input()
+#    assert part_2(test_input) == 30
 
 
-# @no_input_skip
-# def test_part_1_real():
-#     real_input = read_input(__file__)
-#     assert part_1(real_input) is not None
+@no_input_skip
+def test_part_1_real():
+    real_input = read_input(__file__)
+    assert part_1(real_input) == 23673
 
 
 # @no_input_skip
