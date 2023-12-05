@@ -1,11 +1,9 @@
 # Standard Library
+from collections.abc import Generator
 from itertools import batched
 
 # First Party
 from utils import no_input_skip, read_input
-
-# Third Party
-from icecream import ic
 
 
 def part_1(input: str) -> int:
@@ -37,31 +35,43 @@ def part_2(input: str) -> int:
     lines = input.splitlines()
     seeds = list(map(int, lines[0].split()[1:]))
 
-    def split(a: Block, b: Block) -> list[Block]:
-        if a[1] <= b[0] or a[0] >= b[1]:
-            return [a]
+    def split(a: Block, b: Block) -> Generator[Block, None, None]:
+        def in_range(i: int, block: Block) -> bool:
+            return i > block[0] and i < block[1]
 
-        if a[0] >= b[0] and a[1] <= b[1]:
-            return [a]
-
-        if b[0] > a[0] and b[0] < a[1]:
-            return [(a[0], b[0]), (b[0], a[1])]
-
-        if b[1] > a[0] and b[1] < a[1]:
-            return [(a[0], b[1]), (b[1], a[1])]
-
-        raise Exception(f"I got some logic wrong... {a} - {b}")
+        splitting = a  # 10, 30
+        if in_range(b[0], splitting):
+            yield (splitting[0], b[0] - 1)  # 10, 15
+            splitting = (b[0], splitting[1])  # 16, 30
+        if in_range(b[1], splitting):
+            yield (splitting[0], b[1] - 1)  # 16, 25
+            splitting = (b[1], splitting[1])  # 26, 30
+        if splitting[0] < splitting[1]:
+            yield splitting  # 26, 30
 
     results = []
     seed_blocks: list[Block] = []
     for start, count in batched(seeds, 2):
         seed_blocks.append((start, start + count))
 
-        for seed_block in seed_blocks:
-            tmp = split(seed_block, (50, 85))
-            ic(tmp)
+    def process_block(block: Block, start_line: int = 2) -> int:
+        found = False
+        for i, line in enumerate(lines[start_line:]):
+            if line == "" or ":" in line:
+                found = False
+                continue
+            destination, source, length = list(map(int, line.split()))
+            split_blocks = list(split(block, (source, source + length)))
+            if len(split_blocks) > 1:
+                return min(process_block(b, i + start_line) for b in split_blocks)
+            if not found and block[0] >= source and block[1] <= source + length:
+                block = block[0] + (destination - source), block[1] + (destination - source)
+                found = True
 
-    ic(seed_blocks)
+        return min(block)
+
+    for seed_block in seed_blocks:
+        results.append(process_block(seed_block))
 
     return min(results)
 
@@ -121,10 +131,10 @@ def test_part_1_real():
     assert part_1(real_input) == 510109797
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) < 11651122
 
 
 # -- Main
