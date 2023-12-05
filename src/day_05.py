@@ -14,9 +14,9 @@ def part_1(input: str) -> int:
                 found = False
                 continue
 
-            bits = list(map(int, line.split()))
-            if not found and seed >= bits[1] and seed <= bits[1] + bits[2]:
-                seed += bits[0] - bits[1]
+            destination, source, length = list(map(int, line.split()))
+            if not found and seed >= source and seed <= source + length:
+                seed += destination - source
                 found = True
 
         results.append(seed)
@@ -94,6 +94,5 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    part_1(get_example_input())
     print(f"Part1: {part_1(real_input)}")
     print(f"Part2: {part_2(real_input)}")
