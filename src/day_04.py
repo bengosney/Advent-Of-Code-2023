@@ -20,7 +20,7 @@ class Card:
         card, numbers = line.split(":")
         _, id = card.split(" ")
         ours, winning = numbers.split("|")
-        return Card(
+        return cls(
             id=int(id),
             numbers=frozenset(map(int, ours.split())),
             winning=frozenset(map(int, winning.split())),
