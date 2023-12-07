@@ -1,5 +1,7 @@
 # Standard Library
+import multiprocessing
 from collections.abc import Generator
+from functools import partial
 from itertools import batched
 
 # First Party
@@ -7,6 +9,7 @@ from utils import no_input_skip, read_input
 
 # Third Party
 import pytest
+from tqdm import tqdm
 
 
 def part_1(input: str) -> int:
@@ -52,7 +55,7 @@ def split(a: Block, b: Block) -> Generator[Block, None, None]:
             yield splitting
 
 
-def part_2(input: str) -> int:
+def part_2_no_work(input: str) -> int:
     lines = input.splitlines()
     seeds = list(map(int, lines[0].split()[1:]))
 
@@ -83,6 +86,71 @@ def part_2(input: str) -> int:
         results.append(process_block(seed_block))
 
     return min(results)
+
+
+def try_location(i: int, lines, seed_blocks) -> int:
+    def is_seed(potential: int) -> bool:
+        for block in seed_blocks:
+            if potential >= block[0] and potential <= block[1]:
+                return True
+        return False
+
+    seed = i
+    found = False
+    for line in lines[:-1]:
+        if line == "" or ":" in line:
+            found = False
+            continue
+
+        source, destination, length = list(map(int, line.split()))
+        if not found and seed >= source and seed <= source + length:
+            seed += destination - source
+            found = True
+
+    return i if is_seed(seed) else 0
+
+
+def wtf(value: int):
+    with open("day5_state.txt", "w") as f:
+        f.write(str(value))
+
+
+def rtf() -> int:
+    try:
+        with open("day5_state.txt") as f:
+            return int(f.readline())
+    except FileNotFoundError:
+        return 0
+
+
+def write_ans(value):
+    with open("day5_ans.txt", "w") as f:
+        f.write(str(value))
+
+
+def part_2(input: str) -> int:
+    lines = "\n".join(input.split("\n\n")[::-1]).splitlines()
+
+    seed_blocks: list[Block] = []
+    for start, count in batched(list(map(int, lines[-1].split()[1:])), 2):
+        seed_blocks.append((start, start + count))
+
+    start = 0
+    pool_obj = multiprocessing.Pool()
+    try_loc = partial(try_location, lines=lines, seed_blocks=seed_blocks)
+
+    step = 10_000
+    start = rtf()
+    for i in tqdm(range(start, 11_651_122, step)):
+        # print(f"{i} - {i + 1000}")
+        ans = pool_obj.map(try_loc, range(i, i + step))
+        valid = [a for a in ans if a > 0]
+        if len(valid):
+            write_ans(min(valid))
+            return min(valid)
+        wtf(i)
+
+    raise Exception("I hate this puzzle")
 
 
 # -- Tests
@@ -162,7 +230,9 @@ def test_part_1_real():
 # @no_input_skip
 # def test_part_2_real():
 #    real_input = read_input(__file__)
-#    assert part_2(real_input) < 11651122
+#    ans = part_2(real_input)
+#    assert ans < 11651122
+#    assert ans != 9622623
 
 
 # -- Main
@@ -170,6 +240,6 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    part_2(get_example_input())
+    # part_2(get_example_input())
     print(f"Part1: {part_1(real_input)}")
-    print(f"Part2: {part_2(real_input)}")
+    # print(f"Part2: {part_2(real_input)}")
