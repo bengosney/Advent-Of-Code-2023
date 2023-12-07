@@ -1,5 +1,4 @@
 # Standard Library
-import multiprocessing
 from collections.abc import Generator
 from functools import partial
 from itertools import batched
@@ -9,7 +8,6 @@ from utils import no_input_skip, read_input
 
 # Third Party
 import pytest
-from tqdm import tqdm
 
 
 def part_1(input: str) -> int:
@@ -107,6 +105,10 @@ def try_location(i: int, lines, seed_blocks) -> int:
             seed += destination - source
             found = True
 
+    if is_seed(seed):
+        print(f"-- {i} --")
+        return i
+    return 0
     return i if is_seed(seed) else 0
 
 
@@ -136,19 +138,14 @@ def part_2(input: str) -> int:
         seed_blocks.append((start, start + count))
 
     start = 0
-    pool_obj = multiprocessing.Pool()
     try_loc = partial(try_location, lines=lines, seed_blocks=seed_blocks)
 
-    step = 10_000
-    start = rtf()
-    for i in tqdm(range(start, 11_651_122, step)):
+    start = 9611000
+    start = 9610999
+    for i in range(start, 11_651_122):
         # print(f"{i} - {i + 1000}")
-        ans = pool_obj.map(try_loc, range(i, i + step))
-        valid = [a for a in ans if a > 0]
-        if len(valid):
-            write_ans(min(valid))
-            return min(valid)
-        wtf(i)
+        if ans := try_loc(i):
+            return ans
 
     raise Exception("I hate this puzzle")
 
@@ -227,12 +224,13 @@ def test_part_1_real():
     assert part_1(real_input) == 510109797
 
 
-# @no_input_skip
-# def test_part_2_real():
-#    real_input = read_input(__file__)
-#    ans = part_2(real_input)
-#    assert ans < 11651122
-#    assert ans != 9622623
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    ans = part_2(real_input)
+    assert ans < 11651122
+    assert ans != 9622623
+    assert ans == 9622622
 
 
 # -- Main
@@ -241,5 +239,5 @@ if __name__ == "__main__":
     real_input = read_input(__file__)
 
     # part_2(get_example_input())
-    print(f"Part1: {part_1(real_input)}")
-    # print(f"Part2: {part_2(real_input)}")
+    # print(f"Part1: {part_1(real_input)}")
+    print(f"Part2: {part_2(real_input)}")

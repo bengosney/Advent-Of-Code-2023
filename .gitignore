@@ -197,3 +197,4 @@ poetry.toml
 cookies.txt
 .install.state
 /*.txt
+tmp.py
