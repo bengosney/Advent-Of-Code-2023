@@ -14,10 +14,10 @@ from utils import no_input_skip, read_input
 class Hand:
     cards: list[str]
     bid: int
+    joker: bool = False
 
-    @cached_property
-    def score(self) -> int:
-        counts = Counter(self.cards).most_common()
+    @staticmethod
+    def _score_hand(counts: list[tuple[str, int]]) -> int:
         mod = 0
         if counts[0][1] == 2 and counts[1][1] == 2:  # two pair
             mod = 1
@@ -26,14 +26,30 @@ class Hand:
         return (counts[0][1] * counts[0][1]) + mod
 
     @cached_property
-    def tiebreak(self) -> list[int]:
-        scores = dict({str(v): k + 2 for k, v in enumerate(chain(range(2, 10), ["T", "J", "Q", "K", "A"]))})
+    def score(self) -> int:
+        return self._score_hand(Counter(self.cards).most_common())
 
-        return [scores[card] for card in self.cards]
+    @property
+    def best_score(self) -> int:
+        joker_count = sum([1 for c in self.cards if c == "J"])
+        score = self.score
+        if joker_count > 0 and joker_count < 5:
+            counts = Counter([c for c in self.cards if c != "J"]).most_common()
+            counts[0] = (counts[0][0], counts[0][1] + joker_count)
+            score = self._score_hand(counts)
+
+        return score
+
+    @cached_property
+    def tiebreak(self) -> str:
+        if not self.joker:
+            scores = dict({str(v): k + 2 for k, v in enumerate(chain(range(2, 10), ["T", "J", "Q", "K", "A"]))})
+        else:
+            scores = dict({str(v): k + 2 for k, v in enumerate(chain(["J"], range(2, 10), ["T", "Q", "K", "A"]))})
+        return "".join([f"{scores[card]:02}" for card in self.cards])
 
     def __float__(self) -> float:
-        dps = "".join([f"{t:02}" for t in self.tiebreak])
-        return float(f"{self.score}.{dps}")
+        return float(f"{self.score if not self.joker else self.best_score}.{self.tiebreak}")
 
     def __len__(self):
         return len(self.cards)
@@ -45,14 +61,14 @@ class Hand:
         return float(self) <= float(__value)
 
     @classmethod
-    def from_line(cls, line: str) -> Self:
+    def from_line(cls, line: str, joker: bool = False) -> Self:
         cards, bid = line.split()
-        return cls(list(cards), int(bid))
+        return cls(list(cards), int(bid), joker)
 
     @classmethod
-    def parse(cls, input: str) -> list[Self]:
+    def parse(cls, input: str, joker: bool = False) -> list[Self]:
         for line in input.splitlines():
-            yield cls.from_line(line)
+            yield cls.from_line(line, joker)
 
 
 def part_1(input: str) -> int:
@@ -65,7 +81,7 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    hands = sorted(Hand.parse(input))
+    hands = sorted(Hand.parse(input, True))
     totals = []
     for rank, hand in enumerate(hands, 1):
         totals.append(hand.bid * rank)
@@ -100,10 +116,10 @@ def test_part_1_real():
     assert part_1(real_input) == 248217452
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 245576185
 
 
 # -- Main
