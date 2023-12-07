@@ -32,21 +32,17 @@ class Hand:
         return [scores[card] for card in self.cards]
 
     def __float__(self) -> float:
-        tiebreak = "".join([f"{t:02}" for t in self.tiebreak])
-        return float(f"{self.score}.{tiebreak}")
-
-    def __int__(self) -> int:
-        tiebreak = "".join([f"{t:02}" for t in self.tiebreak])
-        return int(f"{self.score:03}{tiebreak}")
+        dps = "".join([f"{t:02}" for t in self.tiebreak])
+        return float(f"{self.score}.{dps}")
 
     def __len__(self):
         return len(self.cards)
 
     def __eq__(self, __value: object) -> bool:
-        return int(self) == int(__value)
+        return float(self) == float(__value)
 
     def __le__(self, __value: object) -> bool:
-        return int(self) <= int(__value)
+        return float(self) <= float(__value)
 
     @classmethod
     def from_line(cls, line: str) -> Self:
