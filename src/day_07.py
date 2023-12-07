@@ -29,39 +29,20 @@ class Hand:
     def tiebreak(self) -> list[int]:
         scores = dict({str(v): k + 2 for k, v in enumerate(chain(range(2, 10), ["T", "J", "Q", "K", "A"]))})
 
-        def score():
-            for card in self.cards:
-                yield scores[card]
+        return [scores[card] for card in self.cards]
 
-        return list(score())
+    def __float__(self) -> float:
+        dps = "".join([f"{t:02}" for t in self.tiebreak])
+        return float(f"{self.score}.{dps}")
 
     def __len__(self):
         return len(self.cards)
 
-    def __eq__(self, __value: Self) -> bool:
-        if self.score != __value.score:
-            return False
+    def __eq__(self, __value: object) -> bool:
+        return float(self) == float(__value)
 
-        for i in range(len(self)):
-            if self.tiebreak[i] != __value.tiebreak[i]:
-                return False
-
-        return True
-
-    def __le__(self, __value: Self) -> bool:
-        if self.score < __value.score:
-            return True
-
-        if self.score > __value.score:
-            return False
-
-        for i in range(len(self)):
-            if self.tiebreak[i] < __value.tiebreak[i]:
-                return True
-            if self.tiebreak[i] > __value.tiebreak[i]:
-                return False
-
-        return False
+    def __le__(self, __value: object) -> bool:
+        return float(self) <= float(__value)
 
     @classmethod
     def from_line(cls, line: str) -> Self:
@@ -84,7 +65,12 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    hands = sorted(Hand.parse(input))
+    totals = []
+    for rank, hand in enumerate(hands, 1):
+        totals.append(hand.bid * rank)
+
+    return sum(totals)
 
 
 # -- Tests
@@ -103,9 +89,9 @@ def test_part_1():
     assert part_1(test_input) == 6440
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 5905
 
 
 @no_input_skip
