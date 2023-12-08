@@ -6,11 +6,12 @@ from utils import no_input_skip, read_input
 
 
 def win_count(time: int, distance: int) -> int:
-    def wins(r: range):
+    def wins(r: range) -> int:
         for hold_time in r:
             travel = (time - hold_time) * hold_time
             if travel > distance:
                 return hold_time
+        return 0
 
     return (wins(range(time, 0, -1)) - wins(range(time))) + 1
 
