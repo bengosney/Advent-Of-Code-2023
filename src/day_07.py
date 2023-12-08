@@ -2,7 +2,7 @@
 from collections import Counter
 from collections.abc import Generator
 from dataclasses import dataclass
-from functools import cached_property, total_ordering
+from functools import cached_property, lru_cache, total_ordering
 from itertools import chain
 from typing import Self
 
@@ -11,9 +11,9 @@ from utils import no_input_skip, read_input
 
 
 @total_ordering
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, unsafe_hash=True)
 class Hand:
-    cards: list[str]
+    cards: tuple[str, ...]
     bid: int
     joker: bool = False
 
@@ -30,7 +30,7 @@ class Hand:
     def score(self) -> int:
         return self._score_hand(Counter(self.cards).most_common())
 
-    @property
+    @cached_property
     def best_score(self) -> int:
         joker_count = sum([1 for c in self.cards if c == "J"])
         score = self.score
@@ -49,6 +49,7 @@ class Hand:
             scores = dict({str(v): k + 2 for k, v in enumerate(chain(["J"], range(2, 10), ["T", "Q", "K", "A"]))})
         return "".join([f"{scores[card]:02}" for card in self.cards])
 
+    @lru_cache
     def __float__(self) -> float:
         return float(f"{self.score if not self.joker else self.best_score}.{self.tiebreak}")
 
@@ -66,7 +67,7 @@ class Hand:
     @classmethod
     def from_line(cls, line: str, joker: bool = False) -> Self:
         cards, bid = line.split()
-        return cls(list(cards), int(bid), joker)
+        return cls(tuple(list(cards)), int(bid), joker)
 
     @classmethod
     def parse(cls, input: str, joker: bool = False) -> Generator[Self, None, None]:
