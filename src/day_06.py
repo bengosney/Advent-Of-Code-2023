@@ -6,17 +6,12 @@ from math import prod
 from utils import no_input_skip, read_input
 
 
-def solve_quadratic(time: int, distance: int) -> tuple[int, int]:
-    discriminant = math.sqrt(time**2 - 4 * distance)
+def win_count(time: int, distance: int) -> int:
+    discriminant = math.sqrt(time**2 - 4 * (distance + 1e-3))
 
     root1 = math.floor((time + discriminant) / 2)
     root2 = math.ceil((time - discriminant) / 2)
 
-    return root1, root2
-
-
-def win_count(time: int, distance: int) -> int:
-    root1, root2 = solve_quadratic(time, distance)
     return (root1 - root2) + 1
 
 
@@ -74,6 +69,5 @@ def test_part_2_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    solve_quadratic(1, 7, 9)
-    # print(f"Part1: {part_1(real_input)}")
-    # print(f"Part2: {part_2(real_input)}")
+    print(f"Part1: {part_1(real_input)}")
+    print(f"Part2: {part_2(real_input)}")
