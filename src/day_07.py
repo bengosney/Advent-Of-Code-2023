@@ -1,5 +1,6 @@
 # Standard Library
 from collections import Counter
+from collections.abc import Generator
 from dataclasses import dataclass
 from functools import cached_property, total_ordering
 from itertools import chain
@@ -55,10 +56,12 @@ class Hand:
         return len(self.cards)
 
     def __eq__(self, __value: object) -> bool:
-        return float(self) == float(__value)
+        return float(self) == __value
 
     def __le__(self, __value: object) -> bool:
-        return float(self) <= float(__value)
+        if isinstance(__value, self.__class__):
+            return float(self) <= float(__value)
+        return NotImplemented
 
     @classmethod
     def from_line(cls, line: str, joker: bool = False) -> Self:
@@ -66,7 +69,7 @@ class Hand:
         return cls(list(cards), int(bid), joker)
 
     @classmethod
-    def parse(cls, input: str, joker: bool = False) -> list[Self]:
+    def parse(cls, input: str, joker: bool = False) -> Generator[Self, None, None]:
         for line in input.splitlines():
             yield cls.from_line(line, joker)
 

@@ -4,16 +4,16 @@ from collections.abc import Callable
 from functools import partial
 from itertools import cycle
 from math import lcm
-from typing import Literal
+from typing import Literal, cast
 
 # First Party
 from utils import no_input_skip, read_input
 
+Insts = list[Literal["L", "R"]]
 Node = dict[Literal["L", "R"], str]
-Instructions = list[Literal["L", "R"]]
 
 
-def solve(current: str, targets: list[str], nodes: dict[str, Node], instructions: Instructions) -> int:
+def solve(current: str, targets: list[str], nodes: dict[str, Node], instructions: Insts) -> int:
     for i, dir in enumerate(cycle(instructions)):
         if current in targets:
             return i
@@ -22,19 +22,19 @@ def solve(current: str, targets: list[str], nodes: dict[str, Node], instructions
     raise Exception("This can not happen")
 
 
-def parse(input: str) -> tuple[Instructions, dict[str, Node]]:
-    instruction_string, node_strings = input.split("\n\n")
+def parse(input: str) -> tuple[Insts, dict[str, Node]]:
+    inst_string, node_strings = input.split("\n\n")
     regex = re.compile(r"(\w{3})\s=\s\((\w{3}),\s(\w{3})\)")
     nodes: dict[str, Node] = {}
     for string in node_strings.splitlines():
         if match := regex.match(string):
             nodes[match.group(1)] = {"L": match.group(2), "R": match.group(3)}
-    instructions: Instructions = [i for i in instruction_string if i == "R" or i == "L"]
+    instructions: Insts = cast(Insts, [i for i in inst_string if i in ["R", "L"]])  # Because I know better...
 
     return instructions, nodes
 
 
-def get_solver(instructions: Instructions, nodes: dict[str, Node], targets: list[str]) -> Callable[[str], int]:
+def get_solver(instructions: Insts, nodes: dict[str, Node], targets: list[str]) -> Callable[[str], int]:
     return partial(solve, instructions=instructions, nodes=nodes, targets=targets)
 
 
