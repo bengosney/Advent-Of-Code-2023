@@ -63,16 +63,16 @@ def part_2(input: str) -> int:
 
     def process_block(block: Block, start_line: int = 2, found: bool = False) -> int:
         _found = found
-        for i, line in enumerate(lines[start_line:]):
+        for i, line in enumerate(lines[start_line:], start_line):
             if line == "" or ":" in line:
                 _found = False
-                if line != "":
-                    pass
                 continue
+
             destination, source, length = list(map(int, line.split()))
-            split_blocks = list(split(block, (source, source + length)))
-            if len(split_blocks) > 1:
-                return min(process_block(b, i + start_line, _found) for b in split_blocks)
+
+            if len(split_blocks := list(split(block, (source, source + length)))) > 1:
+                return min(process_block(b, i, _found) for b in split_blocks)
+
             if not _found and block[0] >= source and block[1] <= source + length:
                 block = block[0] + (destination - source), block[1] + (destination - source)
                 _found = True
