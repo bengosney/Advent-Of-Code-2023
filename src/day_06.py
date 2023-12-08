@@ -1,19 +1,23 @@
 # Standard Library
+import math
 from math import prod
 
 # First Party
 from utils import no_input_skip, read_input
 
 
-def win_count(time: int, distance: int) -> int:
-    def wins(r: range) -> int:
-        for hold_time in r:
-            travel = (time - hold_time) * hold_time
-            if travel > distance:
-                return hold_time
-        return 0
+def solve_quadratic(time: int, distance: int) -> tuple[int, int]:
+    discriminant = math.sqrt(time**2 - 4 * distance)
 
-    return (wins(range(time, 0, -1)) - wins(range(time))) + 1
+    root1 = math.floor((time + discriminant) / 2)
+    root2 = math.ceil((time - discriminant) / 2)
+
+    return root1, root2
+
+
+def win_count(time: int, distance: int) -> int:
+    root1, root2 = solve_quadratic(time, distance)
+    return (root1 - root2) + 1
 
 
 def part_1(input: str) -> int:
@@ -70,5 +74,6 @@ def test_part_2_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    print(f"Part1: {part_1(real_input)}")
-    print(f"Part2: {part_2(real_input)}")
+    solve_quadratic(1, 7, 9)
+    # print(f"Part1: {part_1(real_input)}")
+    # print(f"Part2: {part_2(real_input)}")
