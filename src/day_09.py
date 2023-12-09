@@ -1,27 +1,25 @@
 # Standard Library
 from collections import defaultdict
+from itertools import count
 
 # First Party
 from utils import no_input_skip, read_input
 
 
 def extend(seq: list[int]) -> list[int]:
-    gaps: dict[int, list[int]] = defaultdict(list)
-    i = 0
-    gaps[i] = [s for s in seq]
-    while i < 1000:
-        for s in range(len(gaps[i]) - 1):
-            gaps[i + 1].append(gaps[i][s + 1] - gaps[i][s])
+    seqs: dict[int, list[int]] = defaultdict(list)
+    seqs[0] = seq
+    for i in count():
+        for s in range(len(seqs[i]) - 1):
+            seqs[i + 1].append(seqs[i][s + 1] - seqs[i][s])
 
-        i += 1
-        if all([i == 0 for i in gaps[i]]):
+        if all([i == 0 for i in seqs[i]]):
             break
 
-    for n in range(i - 1, -1, -1):
-        gaps[n].append(gaps[n][-1] + gaps[n + 1][-1])
-        gaps[n] = [gaps[n][0] - gaps[n + 1][0]] + gaps[n]
+    for n in range(len(seqs) - 2, -1, -1):
+        seqs[n] = [seqs[n][0] - seqs[n + 1][0]] + seqs[n] + [seqs[n][-1] + seqs[n + 1][-1]]
 
-    return gaps[0]
+    return seqs[0]
 
 
 def part_1(input: str) -> int:
