@@ -35,17 +35,14 @@ Block = tuple[int, int]
 
 
 def split(a: Block, b: Block) -> Generator[Block, None, None]:
-    def in_range(i: int, block: Block) -> bool:
-        return i >= block[0] and i <= block[1]
-
     if a == b:
         yield a
     else:
         splitting = a
-        if in_range(b[0], splitting) and b[0] != splitting[0]:
+        if splitting[0] <= b[0] <= splitting[1] and b[0] != splitting[0]:
             yield (splitting[0], b[0] - 1)
             splitting = (b[0], splitting[1])
-        if in_range(b[1], splitting) and b[1] != splitting[1]:
+        if splitting[0] <= b[1] <= splitting[1] and b[1] != splitting[1]:
             yield (splitting[0], b[1])
             splitting = (b[1] + 1, splitting[1])
         if splitting[0] <= splitting[1]:
