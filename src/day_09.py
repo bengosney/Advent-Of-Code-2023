@@ -5,7 +5,7 @@ from collections import defaultdict
 from utils import no_input_skip, read_input
 
 
-def next_number(seq: list[int]) -> int:
+def extend(seq: list[int]) -> list[int]:
     gaps: dict[int, list[int]] = defaultdict(list)
     i = 0
     gaps[i] = [s for s in seq]
@@ -19,20 +19,27 @@ def next_number(seq: list[int]) -> int:
 
     for n in range(i - 1, -1, -1):
         gaps[n].append(gaps[n][-1] + gaps[n + 1][-1])
+        gaps[n] = [gaps[n][0] - gaps[n + 1][0]] + gaps[n]
 
-    return gaps[0][-1]
+    return gaps[0]
 
 
 def part_1(input: str) -> int:
     answers = []
     for line in input.splitlines():
-        answers.append(next_number(list(map(int, line.split()))))
+        extended = extend(list(map(int, line.split())))
+        answers.append(extended[-1])
 
     return sum(answers)
 
 
 def part_2(input: str) -> int:
-    pass
+    answers = []
+    for line in input.splitlines():
+        extended = extend(list(map(int, line.split())))
+        answers.append(extended[0])
+
+    return sum(answers)
 
 
 # -- Tests
@@ -49,9 +56,9 @@ def test_part_1():
     assert part_1(test_input) == 114
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 2
 
 
 @no_input_skip
@@ -60,10 +67,10 @@ def test_part_1_real():
     assert part_1(real_input) == 1938800261
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 1112
 
 
 # -- Main
