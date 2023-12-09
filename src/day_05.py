@@ -1,5 +1,5 @@
 # Standard Library
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from itertools import batched
 
 # First Party
@@ -44,8 +44,20 @@ def split(a: Block, b: Block) -> Generator[Block, None, None]:
     yield a
 
 
+class CachingDict(dict):
+    cache_factory: Callable
+
+    def __init__(self, cache_factory) -> None:
+        self.cache_factory = cache_factory
+        return super().__init__()
+
+    def __missing__(self, key):
+        dict.__setitem__(self, key, self.cache_factory(key))
+        return self[key]
+
+
 def part_2(input: str) -> int:
-    lines = input.splitlines()
+    lines = [line for line in input.splitlines() if "-to-" not in line]
     seeds = list(map(int, lines[0].split()[1:]))
 
     results = []
@@ -53,21 +65,22 @@ def part_2(input: str) -> int:
     for start, count in batched(seeds, 2):
         seed_blocks.append((start, start + count))
 
+    line_cache = CachingDict(lambda key: list(map(int, key.split())))
+
     def process_block(block: Block, start_line: int = 2, found: bool = False) -> int:
-        _found = found
         for i, line in enumerate(lines[start_line:], start_line):
-            if line == "" or ":" in line:
-                _found = False
+            if line == "":
+                found = False
                 continue
 
-            destination, source, length = list(map(int, line.split()))
+            destination, source, length = line_cache[line]
 
             if len(split_blocks := list(split(block, (source, source + length)))) > 1:
-                return min(process_block(b, i, _found) for b in split_blocks)
+                return min(process_block(b, i, found) for b in split_blocks)
 
-            if not _found and block[0] >= source and block[1] <= source + length:
+            if not found and block[0] >= source and block[1] <= source + length:
                 block = block[0] + (destination - source), block[1] + (destination - source)
-                _found = True
+                found = True
 
         return min(block)
 
