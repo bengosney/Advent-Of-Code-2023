@@ -1,9 +1,10 @@
 # Standard Library
-from collections.abc import Callable, Generator
+from collections.abc import Generator
 from itertools import batched
 
 # First Party
 from utils import no_input_skip, read_input
+from utils.collections import CachingDict
 
 # Third Party
 import pytest
@@ -31,10 +32,7 @@ def part_1(input: str) -> int:
     return min(results)
 
 
-Block = tuple[int, int]
-
-
-def split(a: Block, b: Block) -> Generator[Block, None, None]:
+def split(a: tuple[int, int], b: tuple[int, int]) -> Generator[tuple[int, int], None, None]:
     if a[0] <= b[0] <= a[1] and b[0] != a[0]:
         yield (a[0], b[0] - 1)
         a = (b[0], a[1])
@@ -44,30 +42,18 @@ def split(a: Block, b: Block) -> Generator[Block, None, None]:
     yield a
 
 
-class CachingDict(dict):
-    cache_factory: Callable
-
-    def __init__(self, cache_factory) -> None:
-        self.cache_factory = cache_factory
-        return super().__init__()
-
-    def __missing__(self, key):
-        dict.__setitem__(self, key, self.cache_factory(key))
-        return self[key]
-
-
 def part_2(input: str) -> int:
     lines = [line for line in input.splitlines() if "-to-" not in line]
     seeds = list(map(int, lines[0].split()[1:]))
 
     results = []
-    seed_blocks: list[Block] = []
+    seed_blocks: list[tuple[int, int]] = []
     for start, count in batched(seeds, 2):
         seed_blocks.append((start, start + count))
 
     line_cache = CachingDict(lambda key: list(map(int, key.split())))
 
-    def process_block(block: Block, start_line: int = 2, found: bool = False) -> int:
+    def process_block(block: tuple[int, int], start_line: int = 2, found: bool = False) -> int:
         for i, line in enumerate(lines[start_line:], start_line):
             if line == "":
                 found = False

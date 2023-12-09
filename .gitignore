@@ -193,8 +193,7 @@ poetry.toml
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,direnv
 
-.testmondata
+.testmondata*
 cookies.txt
 .install.state
 /*.txt
-tmp.py
