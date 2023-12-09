@@ -35,18 +35,13 @@ Block = tuple[int, int]
 
 
 def split(a: Block, b: Block) -> Generator[Block, None, None]:
-    if a == b:
-        yield a
-    else:
-        splitting = a
-        if splitting[0] <= b[0] <= splitting[1] and b[0] != splitting[0]:
-            yield (splitting[0], b[0] - 1)
-            splitting = (b[0], splitting[1])
-        if splitting[0] <= b[1] <= splitting[1] and b[1] != splitting[1]:
-            yield (splitting[0], b[1])
-            splitting = (b[1] + 1, splitting[1])
-        if splitting[0] <= splitting[1]:
-            yield splitting
+    if a[0] <= b[0] <= a[1] and b[0] != a[0]:
+        yield (a[0], b[0] - 1)
+        a = (b[0], a[1])
+    if a[0] <= b[1] <= a[1] and b[1] != a[1]:
+        yield (a[0], b[1])
+        a = (b[1] + 1, a[1])
+    yield a
 
 
 def part_2(input: str) -> int:
