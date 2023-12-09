@@ -1,8 +1,10 @@
 # Standard Library
 import contextlib
 from collections.abc import Callable
+from cProfile import Profile
 from importlib import import_module
 from pathlib import Path
+from pstats import SortKey, Stats
 from statistics import mean
 from time import time
 
@@ -57,6 +59,16 @@ def benchmark(iterations: int = 10, days: list[str] = []) -> None:
 
     with Console() as console:
         console.print(table)
+
+
+@app.command()
+def profile(day: str, part: int):
+    module = import_module(day)
+    input_str = read_input(day)
+
+    with Profile() as profile:
+        getattr(module, f"part_{part}")(input_str)
+        Stats(profile).strip_dirs().sort_stats(SortKey.CALLS).print_stats()
 
 
 def run_day(day: str, progress: Callable = lambda: None) -> tuple[float, float]:
