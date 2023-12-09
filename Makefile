@@ -1,4 +1,4 @@
-.PHONY: help clean test install all init dev
+.PHONY: help clean test install all init dev cli
 .DEFAULT_GOAL := install
 .PRECIOUS: requirements.%.in
 
@@ -90,6 +90,9 @@ inputs/day_%.txt: $(COOKIEFILE)
 src/day_%.py:
 	cp template.py.template $@
 
+src/aoc.py: $(wildcard src/day_*.py)
+	cog -cr $@
+
 mypy: $(ALLDAYS)
 	mypy --check-untyped-defs $^
 
@@ -110,3 +113,6 @@ today: .install.state $(CURRENT_PY) $(CURRENT_INPUT) ## Setup current day and st
 
 day_%:
 	ptw --runner "pytest --testmon" --onfail "notify-send \"Failed\"" --onpass "notify-send \"Passed\"" src/$@.py
+
+cli: src/aoc.py
+	@python -m pip install -e .

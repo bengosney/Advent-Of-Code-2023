@@ -2,9 +2,10 @@
 import contextlib
 from collections.abc import Callable
 from cProfile import Profile
+from enum import Enum
 from importlib import import_module
 from pathlib import Path
-from pstats import SortKey, Stats
+from pstats import Stats
 from statistics import mean
 from time import time
 
@@ -18,6 +19,42 @@ from rich.progress import Progress
 from rich.table import Table
 
 app = typer.Typer()
+
+
+class DayType(str, Enum):
+    # [[[cog
+    # import cog
+    # from pathlib import Path
+    # for day in sorted([p.name.replace(".py", "") for p in list(Path("./src").glob("day_*.py"))]):
+    #    cog.outl(f'{day.upper()} = "{day}"')
+    # ]]]
+    DAY_01 = "day_01"
+    DAY_02 = "day_02"
+    DAY_03 = "day_03"
+    DAY_04 = "day_04"
+    DAY_05 = "day_05"
+    DAY_06 = "day_06"
+    DAY_07 = "day_07"
+    DAY_08 = "day_08"
+    DAY_09 = "day_09"
+    # [[[end]]] (checksum: c53d91a0205ae4444080953c1322cf33)
+
+
+class SortType(str, Enum):
+    CALLS = "calls"
+    CUMULATIVE = "cumulative"
+    FILENAME = "filename"
+    LINE = "line"
+    NAME = "name"
+    NFL = "nfl"
+    PCALLS = "pcalls"
+    STDNAME = "stdname"
+    TIME = "time"
+
+
+class PartType(str, Enum):
+    PART_1 = "part_1"
+    PART_2 = "part_2"
 
 
 def time_it(day: str, iterations: int = 1, progress: Callable = lambda: None) -> tuple[float, float]:
@@ -39,7 +76,7 @@ def time_it(day: str, iterations: int = 1, progress: Callable = lambda: None) ->
 
 
 @app.command()
-def benchmark(iterations: int = 10, days: list[str] = []) -> None:
+def benchmark(iterations: int = 10, days: list[DayType] = []) -> None:
     table = Table(title=f"AOC 2023 - Timings\n({iterations:,} iterations)")
 
     table.add_column("Day", justify="center", style="bold")
@@ -47,11 +84,13 @@ def benchmark(iterations: int = 10, days: list[str] = []) -> None:
     table.add_column("Part 2", justify="right")
 
     if not days:
-        days = [p.name.replace(".py", "") for p in list(Path("./src").glob("day_*.py"))]
+        _days = [p.name.replace(".py", "") for p in list(Path("./src").glob("day_*.py"))]
+    else:
+        _days = [str(d) for d in days]
 
     with Progress(transient=True) as progress:
-        task = progress.add_task("Running code", total=(len(days) * 2) * iterations)
-        for day in sorted(days):
+        task = progress.add_task("Running code", total=(len(_days) * 2) * iterations)
+        for day in sorted(_days):
             p1, p2 = time_it(day, iterations, lambda: progress.update(task, advance=1))
 
             _, d = day.split("_")
@@ -62,13 +101,13 @@ def benchmark(iterations: int = 10, days: list[str] = []) -> None:
 
 
 @app.command()
-def profile(day: str, part: int):
+def profile(day: DayType, part: PartType, sort: SortType = SortType.CALLS):
     module = import_module(day)
     input_str = read_input(day)
 
     with Profile() as profile:
-        getattr(module, f"part_{part}")(input_str)
-        Stats(profile).strip_dirs().sort_stats(SortKey.CALLS).print_stats()
+        getattr(module, part)(input_str)
+        Stats(profile).strip_dirs().sort_stats(sort).print_stats()
 
 
 def run_day(day: str, progress: Callable = lambda: None) -> tuple[float, float]:

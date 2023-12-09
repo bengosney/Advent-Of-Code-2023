@@ -46,3 +46,10 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
+  - repo: local
+    hooks:
+      - id: cli-update
+        language: system
+        entry: cog -cr src/aoc.py
+        name: cli-update
+        files: src/aoc.py

@@ -6,10 +6,12 @@ requires-python = ">=3.12"
 dependencies = [
     "rich",
     "typer[all]",
+#    "-e .",
 ]
 
 [project.optional-dependencies]
 dev = [
+    "cogapp",
     "pytest",
     "pytest-testmon",
     "pytest-watch",
