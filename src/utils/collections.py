@@ -16,3 +16,8 @@ class CachingDict(dict[K, T], Generic[K, T]):
     def __missing__(self, __key: K) -> T:
         dict.__setitem__(self, __key, self.cache_factory(__key))
         return self[__key]
+
+
+def test_caching_dict():
+    test_dict = CachingDict(lambda key: f"{key}-{key}")
+    assert test_dict["test"] == "test-test"
