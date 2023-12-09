@@ -57,7 +57,7 @@ def part_1(input: str) -> int:
         nonlocal valid, collecting
         if valid:
             collected.append(int("".join(collecting)))
-        collecting = []
+        collecting.clear()
         valid = False
 
     for y in grid.height:
