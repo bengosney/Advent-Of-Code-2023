@@ -114,6 +114,8 @@ def part_2(input: str) -> int:
     draw_grid(pipe_map)
     keys = [k for k in pipe_map.keys()]
 
+    add = Moves.add
+
     for k in keys:
         if pipe_map[k] != ".":
             continue
@@ -123,11 +125,40 @@ def part_2(input: str) -> int:
         while len(checking):
             pos = checking.pop()
             for around in Moves.around(*pos):
+                if pipe_map[around] == "!":
+                    pipe_map[pos] = "!"
+
                 if pipe_map[around] == "." and around not in seen:
                     checking.append(around)
                     seen.add(around)
-                if pipe_map[around] == "!":
-                    pipe_map[pos] = "!"
+
+                if pipe_map[around] in ["J", "7"] and pipe_map[add(around, (1, 0))] in ["L", "F"]:
+                    mod = -1 if pipe_map[around] == "J" else 1
+                    for i in count():
+                        left = add(around, (0, i * mod))
+                        right = add(around, (1, i * mod))
+                        if pipe_map[left] in ["|", "J", "7"] and pipe_map[right] in ["|", "L", "F"]:
+                            continue
+                        for d in [left, right]:
+                            if pipe_map[d] == "." and d not in seen:
+                                checking.append(d)
+                                seen.add(d)
+                                pipe_map[d] = "!"
+                        break
+
+                if pipe_map[around] in ["7", "F"] and pipe_map[add(around, (0, 1))] in ["J", "L"]:
+                    mod = -1 if pipe_map[around] == "J" else 1
+                    for i in count():
+                        up = add(around, (i * mod, 0))
+                        down = add(around, (i * mod, 1))
+                        if pipe_map[up] in ["-", "F", "7"] and pipe_map[down] in ["-", "L", "J"]:
+                            continue
+                        for d in [up, down]:
+                            if pipe_map[d] == "." and d not in seen:
+                                checking.append(d)
+                                seen.add(d)
+                                pipe_map[d] = "!"
+                        break
 
     draw_grid(pipe_map)
     counter = Counter(pipe_map.values())
@@ -197,7 +228,7 @@ def test_part_2():
     test_input_1, test_input_2, test_input_3 = get_example_inputs_two()
     assert part_2(test_input_1) == 4
     assert part_2(test_input_2) == 4
-    # assert part_2(test_input_3) == 8
+    assert part_2(test_input_3) == 8
 
 
 @no_input_skip
@@ -208,8 +239,8 @@ def test_part_1_real():
 
 # @no_input_skip
 # def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+#    real_input = read_input(__file__)
+#    assert part_2(real_input) < 387
 
 
 # -- Main
@@ -217,6 +248,5 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    test_part_2()
-    # print(f"Part1: {part_1(real_input)}")
-    # print(f"Part2: {part_2(real_input)}")
+    print(f"Part1: {part_1(real_input)}")
+    print(f"Part2: {part_2(real_input)}")
