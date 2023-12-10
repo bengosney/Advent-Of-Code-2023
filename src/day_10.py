@@ -1,10 +1,13 @@
 # Standard Library
-from collections import defaultdict
+from collections import Counter, defaultdict, deque
 from itertools import count
 from typing import Self
 
 # First Party
-from utils import no_input_skip, read_input
+from utils import draw_grid, no_input_skip, read_input
+
+# Third Party
+from icecream import ic
 
 
 class Moves:
@@ -103,13 +106,40 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    pipe_map = defaultdict(lambda: "!")
+    for y, line in enumerate(input.splitlines()):
+        for x, char in enumerate(line):
+            pipe_map[x, y] = char
+
+    draw_grid(pipe_map)
+    keys = [k for k in pipe_map.keys()]
+
+    for k in keys:
+        if pipe_map[k] != ".":
+            continue
+
+        checking = deque([k])
+        seen = set()
+        while len(checking):
+            p = checking.pop()
+            for a in Moves.around(*p):
+                if pipe_map[a] == "." and a not in seen:
+                    checking.append(a)
+                    seen.add(a)
+                if pipe_map[a] == "!":
+                    pipe_map[p] = "!"
+
+    draw_grid(pipe_map)
+    counter = Counter(pipe_map.values())
+    counts = dict(counter.most_common())
+    ic(counts)
+    return counts["."]
 
 
 # -- Tests
 
 
-def get_example_input() -> tuple[str, str]:
+def get_example_inputs_one() -> tuple[str, str]:
     return (
         """.....
 .S-7.
@@ -125,14 +155,49 @@ LJ...""",
 
 
 def test_part_1():
-    test_input_1, test_input_2 = get_example_input()
+    test_input_1, test_input_2 = get_example_inputs_one()
     assert part_1(test_input_1) == 4
     assert part_1(test_input_2) == 8
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def get_example_inputs_two():
+    return (
+        """...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........""",
+        """..........
+.S------7.
+.|F----7|.
+.||....||.
+.||....||.
+.|L-7F-J|.
+.|..||..|.
+.L--JL--J.
+..........""",
+        """.F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...""",
+    )
+
+
+def test_part_2():
+    test_input_1, test_input_2, test_input_3 = get_example_inputs_two()
+    assert part_2(test_input_1) == 4
+    assert part_2(test_input_2) == 4
+    # assert part_2(test_input_3) == 8
 
 
 @no_input_skip
@@ -152,5 +217,6 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    print(f"Part1: {part_1(real_input)}")
-    print(f"Part2: {part_2(real_input)}")
+    test_part_2()
+    # print(f"Part1: {part_1(real_input)}")
+    # print(f"Part2: {part_2(real_input)}")

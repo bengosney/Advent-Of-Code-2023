@@ -8,7 +8,7 @@ def draw_grid(grid: GridType, missing: str = "."):
         width.add(x)
         height.add(y)
 
-    for y in range(min(height), max(height)):
-        for x in range(min(width), max(width)):
+    for y in range(min(height), max(height) + 1):
+        for x in range(min(width), max(width) + 1):
             print(grid[x, y], end="")
         print()
