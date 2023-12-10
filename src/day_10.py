@@ -121,13 +121,13 @@ def part_2(input: str) -> int:
         checking = deque([k])
         seen = set()
         while len(checking):
-            p = checking.pop()
-            for a in Moves.around(*p):
-                if pipe_map[a] == "." and a not in seen:
-                    checking.append(a)
-                    seen.add(a)
-                if pipe_map[a] == "!":
-                    pipe_map[p] = "!"
+            pos = checking.pop()
+            for around in Moves.around(*pos):
+                if pipe_map[around] == "." and around not in seen:
+                    checking.append(around)
+                    seen.add(around)
+                if pipe_map[around] == "!":
+                    pipe_map[pos] = "!"
 
     draw_grid(pipe_map)
     counter = Counter(pipe_map.values())
