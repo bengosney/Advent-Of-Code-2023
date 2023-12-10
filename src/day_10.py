@@ -1,13 +1,10 @@
 # Standard Library
-from collections import Counter, defaultdict, deque
-from itertools import count
+from collections import defaultdict
+from itertools import count, pairwise
 from typing import Self
 
 # First Party
-from utils import draw_grid, no_input_skip, read_input
-
-# Third Party
-from icecream import ic
+from utils import no_input_skip, read_input
 
 
 class Moves:
@@ -78,6 +75,31 @@ class Moves:
         raise Exception(f"Invalid dir: {dir}")
 
 
+def build_path(pipe_map: dict[tuple[int, int], str], start: tuple[int, int]) -> list[tuple[int, int]]:
+    current = start
+    prev = None
+    path = []
+    for i in count():
+        for dir in Moves.valid_dirs(pipe_map[current]):
+            if dir == prev:
+                continue
+            n = Moves.add(current, dir)
+            if pipe_map[n] == "S":
+                path.append(current)
+                break
+            if pipe_map[n] in Moves.valid(dir):
+                path.append(current)
+                current = n
+                prev = Moves.opposite(dir)
+                break
+        else:
+            raise Exception("No valid move found")
+        if pipe_map[n] == "S":
+            break
+
+    return path
+
+
 def part_1(input: str) -> int:
     start = 0, 0
     pipe_map = defaultdict(lambda: ".")
@@ -86,85 +108,31 @@ def part_1(input: str) -> int:
             pipe_map[x, y] = char
             if char == "S":
                 start = x, y
-    current = start
-    prev = None
-    for i in count():
-        for dir in Moves.valid_dirs(pipe_map[current]):
-            if dir == prev:
-                continue
-            n = Moves.add(current, dir)
-            if pipe_map[n] == "S":
-                return (i + 1) // 2
-            if pipe_map[n] in Moves.valid(dir):
-                current = n
-                prev = Moves.opposite(dir)
-                break
-        else:
-            raise Exception("No valid move found")
 
-    raise Exception("This can not happen")
+    path = build_path(pipe_map, start)
+    return len(path) // 2
+
+
+def path_length(path: list[tuple[int, int]]) -> float:
+    length = 0
+    for (x1, y1), (x2, y2) in pairwise(path + path[:1]):
+        length += (x1 * y2) - (y1 * x2)
+    return abs(length) / 2
 
 
 def part_2(input: str) -> int:
-    pipe_map = defaultdict(lambda: "!")
+    start = 0, 0
+    pipe_map = defaultdict(lambda: ".")
     for y, line in enumerate(input.splitlines()):
         for x, char in enumerate(line):
             pipe_map[x, y] = char
+            if char == "S":
+                start = x, y
 
-    draw_grid(pipe_map)
-    keys = [k for k in pipe_map.keys()]
+    path = build_path(pipe_map, start)
+    internal_area = path_length(path)
 
-    add = Moves.add
-
-    for k in keys:
-        if pipe_map[k] != ".":
-            continue
-
-        checking = deque([k])
-        seen = set()
-        while len(checking):
-            pos = checking.pop()
-            for around in Moves.around(*pos):
-                if pipe_map[around] == "!":
-                    pipe_map[pos] = "!"
-
-                if pipe_map[around] == "." and around not in seen:
-                    checking.append(around)
-                    seen.add(around)
-
-                if pipe_map[around] in ["J", "7"] and pipe_map[add(around, (1, 0))] in ["L", "F"]:
-                    mod = -1 if pipe_map[around] == "J" else 1
-                    for i in count():
-                        left = add(around, (0, i * mod))
-                        right = add(around, (1, i * mod))
-                        if pipe_map[left] in ["|", "J", "7"] and pipe_map[right] in ["|", "L", "F"]:
-                            continue
-                        for d in [left, right]:
-                            if pipe_map[d] == "." and d not in seen:
-                                checking.append(d)
-                                seen.add(d)
-                                pipe_map[d] = "!"
-                        break
-
-                if pipe_map[around] in ["7", "F"] and pipe_map[add(around, (0, 1))] in ["J", "L"]:
-                    mod = -1 if pipe_map[around] == "J" else 1
-                    for i in count():
-                        up = add(around, (i * mod, 0))
-                        down = add(around, (i * mod, 1))
-                        if pipe_map[up] in ["-", "F", "7"] and pipe_map[down] in ["-", "L", "J"]:
-                            continue
-                        for d in [up, down]:
-                            if pipe_map[d] == "." and d not in seen:
-                                checking.append(d)
-                                seen.add(d)
-                                pipe_map[d] = "!"
-                        break
-
-    draw_grid(pipe_map)
-    counter = Counter(pipe_map.values())
-    counts = dict(counter.most_common())
-    ic(counts)
-    return counts["."]
+    return int(internal_area + 1 - (len(path) / 2))
 
 
 # -- Tests
@@ -237,10 +205,10 @@ def test_part_1_real():
     assert part_1(real_input) == 6947
 
 
-# @no_input_skip
-# def test_part_2_real():
-#    real_input = read_input(__file__)
-#    assert part_2(real_input) < 387
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 273
 
 
 # -- Main
