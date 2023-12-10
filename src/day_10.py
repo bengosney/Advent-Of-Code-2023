@@ -6,9 +6,6 @@ from typing import Self
 # First Party
 from utils import no_input_skip, read_input
 
-# Third Party
-from icecream import ic
-
 
 class Moves:
     UP = 0, -1
@@ -88,10 +85,8 @@ def part_1(input: str) -> int:
                 start = x, y
     current = start
     prev = None
-    hist = []
     for i in count():
         for dir in Moves.valid_dirs(pipe_map[current]):
-            word = Moves.word(dir)
             if dir == prev:
                 continue
             n = Moves.add(current, dir)
@@ -100,14 +95,9 @@ def part_1(input: str) -> int:
             if pipe_map[n] in Moves.valid(dir):
                 current = n
                 prev = Moves.opposite(dir)
-                hist.append(word)
                 break
         else:
-            ic(hist)
             raise Exception("No valid move found")
-
-        if i > 200000:
-            break
 
     raise Exception("This can not happen")
 
