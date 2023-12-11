@@ -6,6 +6,9 @@ from itertools import combinations
 # First Party
 from utils import draw_grid, no_input_skip, read_input  # noqa
 
+# Third Party
+from icecream import ic
+
 Point = tuple[int, int]
 
 
@@ -61,8 +64,47 @@ def part_1(input: str) -> int:
     return distance
 
 
-def part_2(input: str) -> int:
-    pass
+def part_2(input: str, expansion: int = 1_000_000) -> int:
+    sky: dict[Point, str] = defaultdict(lambda: ".")
+    ys = set()
+    xs = set()
+    for y, line in enumerate(input.splitlines()):
+        ys.add(y)
+        for x, char in enumerate(line):
+            xs.add(x)
+            if char == "#":
+                sky[(x, y)] = char
+
+    e_x = []
+    for x in range(max(xs) + 1):
+        if all([sky[(x, y)] == "." for y in range(max(ys) + 1)]):
+            e_x.append(x)
+    e_y = []
+    for y in range(max(ys) + 1):
+        if all([sky[(x, y)] == "." for x in range(max(xs) + 1)]):
+            e_y.append(y)
+
+    def expand(point: Point) -> Point:
+        x, y = point
+        for ex in e_x:
+            if x > ex:
+                x += expansion
+        for ey in e_y:
+            if y > ey:
+                y += expansion
+        return x, y
+
+    galaxies = [k for k, v in sky.items() if v == "#"]
+    ic(galaxies)
+
+    galaxies: list[Point] = [expand(k) for k, v in sky.items() if v == "#"]
+    ic(galaxies)
+
+    distance = 0
+    for g1, g2 in combinations(galaxies, 2):
+        distance += calc_distance(g1, g2)
+
+    return distance
 
 
 # -- Tests
@@ -86,9 +128,11 @@ def test_part_1():
     assert part_1(test_input) == 374
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input, 1) == 374
+    assert part_2(test_input, 10) == 1030
+    assert part_2(test_input, 100) == 8410
 
 
 @no_input_skip
@@ -108,6 +152,5 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    test_rotate()
     print(f"Part1: {part_1(real_input)}")
     print(f"Part2: {part_2(real_input)}")
