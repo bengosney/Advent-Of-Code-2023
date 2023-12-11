@@ -51,7 +51,7 @@ def part_2(input: str) -> int:
     for start, count in batched(seeds, 2):
         seed_blocks.append((start, start + count))
 
-    line_cache = CachingDict(lambda key: list(map(int, key.split())))
+    line_cache = CachingDict[str, list[int]](lambda key: list(map(int, key.split())))
 
     def process_block(block: tuple[int, int], start_line: int = 2, found: bool = False) -> int:
         for i, line in enumerate(lines[start_line:], start_line):

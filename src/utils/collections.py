@@ -19,5 +19,5 @@ class CachingDict(dict[K, T], Generic[K, T]):
 
 
 def test_caching_dict():
-    test_dict = CachingDict(lambda key: f"{key}-{key}")
+    test_dict = CachingDict[str, str](lambda key: f"{key}-{key}")
     assert test_dict["test"] == "test-test"
