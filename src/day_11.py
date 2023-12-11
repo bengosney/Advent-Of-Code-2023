@@ -48,6 +48,9 @@ def part_1(input: str) -> int:
     expanded = re.sub(r"(^\.+$)", "\\1\n\\1", input, flags=re.MULTILINE)
     expanded = rotate(expanded)
     expanded = re.sub(r"(^\.+$)", "\\1\n\\1", expanded, flags=re.MULTILINE)
+    expanded = rotate(expanded)
+    expanded = rotate(expanded)
+    expanded = rotate(expanded)
 
     sky: dict[Point, str] = defaultdict(lambda: ".")
     for y, line in enumerate(expanded.splitlines()):
@@ -56,12 +59,13 @@ def part_1(input: str) -> int:
                 sky[(x, y)] = char
 
     galaxies: list[Point] = [k for k, v in sky.items() if v == "#"]
-
+    if len(galaxies) < 15:
+        ic(galaxies)
     distance = 0
     for g1, g2 in combinations(galaxies, 2):
         distance += calc_distance(g1, g2)
 
-    return distance
+    return distance - 1
 
 
 def part_2(input: str, expansion: int = 1_000_000) -> int:
@@ -78,20 +82,20 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     e_x = []
     for x in range(max(xs) + 1):
         if all([sky[(x, y)] == "." for y in range(max(ys) + 1)]):
-            e_x.append(x)
+            e_x.append(x + (len(e_x) * expansion))
     e_y = []
     for y in range(max(ys) + 1):
         if all([sky[(x, y)] == "." for x in range(max(xs) + 1)]):
-            e_y.append(y)
+            e_y.append(y + (len(e_y) * expansion))
 
     def expand(point: Point) -> Point:
         x, y = point
         for ex in e_x:
             if x > ex:
-                x += expansion
+                x += expansion - 1
         for ey in e_y:
             if y > ey:
-                y += expansion
+                y += expansion - 1
         return x, y
 
     galaxies = [k for k, v in sky.items() if v == "#"]
@@ -107,6 +111,8 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     return distance
 
 
+# [(4, 0), ( 9, 1), (0, 2), (8, 5), (1, 6), (12, 7), (9, 10), (0, 11), (5, 11)] # correct
+# [(4, 0), (10, 1), (0, 2), (8, 5), (1, 6), (12, 7), (10, 10), (0, 11), (5, 11)]
 # -- Tests
 
 
@@ -130,7 +136,7 @@ def test_part_1():
 
 def test_part_2():
     test_input = get_example_input()
-    assert part_2(test_input, 1) == 374
+    assert part_2(test_input, 2) == 374
     assert part_2(test_input, 10) == 1030
     assert part_2(test_input, 100) == 8410
 
