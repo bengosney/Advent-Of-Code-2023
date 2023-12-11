@@ -62,32 +62,29 @@ def part_1(input: str) -> int:
 
 def part_2(input: str, expansion: int = 1_000_000) -> int:
     sky: dict[Point, str] = defaultdict(lambda: ".")
-    ys = set()
-    xs = set()
     for y, line in enumerate(input.splitlines()):
-        ys.add(y)
         for x, char in enumerate(line):
-            xs.add(x)
-            if char == "#":
-                sky[(x, y)] = char
+            sky[(x, y)] = char
 
-    e_x = []
-    for x in range(max(xs) + 1):
-        if all([sky[(x, y)] == "." for y in range(max(ys) + 1)]):
-            e_x.append(x + (len(e_x) * (expansion - 1)))
-    e_y = []
-    for y in range(max(ys) + 1):
-        if all([sky[(x, y)] == "." for x in range(max(xs) + 1)]):
-            e_y.append(y + (len(e_y) * (expansion - 1)))
+    max_x = max([x for x, _ in sky]) + 1
+    max_y = max([y for _, y in sky]) + 1
+
+    expansion -= 1
+    expansions_x = []
+    for x in range(max_x):
+        if all([sky[(x, y)] == "." for y in range(max_y)]):
+            expansions_x.append(x + (len(expansions_x) * expansion))
+    expansions_y = []
+    for y in range(max_y):
+        if all([sky[(x, y)] == "." for x in range(max_x)]):
+            expansions_y.append(y + (len(expansions_y) * expansion))
 
     def expand(point: Point) -> Point:
         x, y = point
-        for ex in e_x:
-            if x > ex:
-                x += expansion - 1
-        for ey in e_y:
-            if y > ey:
-                y += expansion - 1
+        for expansion_x in expansions_x:
+            x += expansion if x > expansion_x else 0
+        for expansion_y in expansions_y:
+            y += expansion if y > expansion_y else 0
         return x, y
 
     galaxies: list[Point] = [expand(k) for k, v in sky.items() if v == "#"]
