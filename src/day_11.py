@@ -4,37 +4,14 @@ from collections import defaultdict
 from itertools import combinations
 
 # First Party
-from utils import draw_grid, no_input_skip, read_input  # noqa
+from utils import no_input_skip, read_input
 
 Point = tuple[int, int]
 
 
 def rotate(string: str) -> str:
-    grid = []
-    for y, line in enumerate(string.splitlines()):
-        grid.append([])
-        for x, char in enumerate(line):
-            grid[y].append(char)
-
-    rotated = list(zip(*grid[::-1]))
-
-    output = ""
-    for line in rotated:
-        output += "".join(line) + "\n"
-
-    return output.strip("\n")
-
-
-def test_rotate():
-    test_str = """
-123
-456
-789"""
-    expected = """
-741
-852
-963"""
-    assert rotate(test_str.strip("\n")) == expected.strip("\n")
+    grid = [list(line) for line in string.splitlines()]
+    return "\n".join(["".join(line) for line in zip(*grid[::-1])])
 
 
 def calc_distance(a: Point, b: Point) -> int:
@@ -49,8 +26,7 @@ def part_1(input: str) -> int:
     sky: dict[Point, str] = defaultdict(lambda: ".")
     for y, line in enumerate(expanded.splitlines()):
         for x, char in enumerate(line):
-            if char == "#":
-                sky[(x, y)] = char
+            sky[(x, y)] = char
 
     galaxies: list[Point] = [k for k, v in sky.items() if v == "#"]
     distance = 0
@@ -70,11 +46,12 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     max_y = max([y for _, y in sky]) + 1
 
     expansion -= 1
-    expansions_x = []
+    expansions_x: list[int] = []
     for x in range(max_x):
         if all([sky[(x, y)] == "." for y in range(max_y)]):
             expansions_x.append(x + (len(expansions_x) * expansion))
-    expansions_y = []
+
+    expansions_y: list[int] = []
     for y in range(max_y):
         if all([sky[(x, y)] == "." for x in range(max_x)]):
             expansions_y.append(y + (len(expansions_y) * expansion))
@@ -115,6 +92,18 @@ def get_example_input() -> str:
 def test_part_1():
     test_input = get_example_input()
     assert part_1(test_input) == 374
+
+
+def test_rotate():
+    test_str = """
+123
+456
+789"""
+    expected = """
+741
+852
+963"""
+    assert rotate(test_str.strip("\n")) == expected.strip("\n")
 
 
 def test_part_2():
