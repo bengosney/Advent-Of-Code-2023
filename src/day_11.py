@@ -6,9 +6,6 @@ from itertools import combinations
 # First Party
 from utils import draw_grid, no_input_skip, read_input  # noqa
 
-# Third Party
-from icecream import ic
-
 Point = tuple[int, int]
 
 
@@ -48,9 +45,6 @@ def part_1(input: str) -> int:
     expanded = re.sub(r"(^\.+$)", "\\1\n\\1", input, flags=re.MULTILINE)
     expanded = rotate(expanded)
     expanded = re.sub(r"(^\.+$)", "\\1\n\\1", expanded, flags=re.MULTILINE)
-    expanded = rotate(expanded)
-    expanded = rotate(expanded)
-    expanded = rotate(expanded)
 
     sky: dict[Point, str] = defaultdict(lambda: ".")
     for y, line in enumerate(expanded.splitlines()):
@@ -59,13 +53,11 @@ def part_1(input: str) -> int:
                 sky[(x, y)] = char
 
     galaxies: list[Point] = [k for k, v in sky.items() if v == "#"]
-    if len(galaxies) < 15:
-        ic(galaxies)
     distance = 0
     for g1, g2 in combinations(galaxies, 2):
         distance += calc_distance(g1, g2)
 
-    return distance - 1
+    return distance
 
 
 def part_2(input: str, expansion: int = 1_000_000) -> int:
@@ -82,11 +74,11 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     e_x = []
     for x in range(max(xs) + 1):
         if all([sky[(x, y)] == "." for y in range(max(ys) + 1)]):
-            e_x.append(x + (len(e_x) * expansion))
+            e_x.append(x + (len(e_x) * (expansion - 1)))
     e_y = []
     for y in range(max(ys) + 1):
         if all([sky[(x, y)] == "." for x in range(max(xs) + 1)]):
-            e_y.append(y + (len(e_y) * expansion))
+            e_y.append(y + (len(e_y) * (expansion - 1)))
 
     def expand(point: Point) -> Point:
         x, y = point
@@ -98,11 +90,7 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
                 y += expansion - 1
         return x, y
 
-    galaxies = [k for k, v in sky.items() if v == "#"]
-    ic(galaxies)
-
     galaxies: list[Point] = [expand(k) for k, v in sky.items() if v == "#"]
-    ic(galaxies)
 
     distance = 0
     for g1, g2 in combinations(galaxies, 2):
@@ -111,8 +99,6 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     return distance
 
 
-# [(4, 0), ( 9, 1), (0, 2), (8, 5), (1, 6), (12, 7), (9, 10), (0, 11), (5, 11)] # correct
-# [(4, 0), (10, 1), (0, 2), (8, 5), (1, 6), (12, 7), (10, 10), (0, 11), (5, 11)]
 # -- Tests
 
 
@@ -147,10 +133,10 @@ def test_part_1_real():
     assert part_1(real_input) == 10231178
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 622120986954
 
 
 # -- Main
