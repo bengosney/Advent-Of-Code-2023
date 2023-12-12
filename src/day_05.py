@@ -14,7 +14,7 @@ def part_1(input: str) -> int:
     lines = input.splitlines()
     seeds = list(map(int, lines[0].split()[1:]))
 
-    results = []
+    results: list[int] = []
     for seed in seeds:
         found = False
         for line in lines[2:]:
@@ -46,7 +46,7 @@ def part_2(input: str) -> int:
     lines = [line for line in input.splitlines() if "-to-" not in line]
     seeds = list(map(int, lines[0].split()[1:]))
 
-    results = []
+    results: list[int] = []
     seed_blocks: list[tuple[int, int]] = []
     for start, count in batched(seeds, 2):
         seed_blocks.append((start, start + count))
@@ -135,7 +135,7 @@ def test_part_1():
         ([(20, 30), (10, 20)], [(20, 20), (21, 30)]),
     ],
 )
-def test_splitting(test_input, expected):
+def test_splitting(test_input: list[tuple[int, int]], expected: list[tuple[int, int]]):
     assert list(split(*test_input)) == expected
 
 

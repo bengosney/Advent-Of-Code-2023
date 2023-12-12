@@ -8,6 +8,7 @@ from pathlib import Path
 from pstats import Stats
 from statistics import mean
 from time import time
+from typing import Any
 
 # First Party
 from utils import read_input
@@ -37,7 +38,10 @@ class DayType(str, Enum):
     DAY_07 = "day_07"
     DAY_08 = "day_08"
     DAY_09 = "day_09"
-    # [[[end]]] (checksum: c53d91a0205ae4444080953c1322cf33)
+    DAY_10 = "day_10"
+    DAY_11 = "day_11"
+    DAY_12 = "day_12"
+    # [[[end]]] (checksum: 411f60540076704cb935eefad0e384c1)
 
 
 class SortType(str, Enum):
@@ -57,7 +61,7 @@ class PartType(str, Enum):
     PART_2 = "part_2"
 
 
-def time_it(day: str, iterations: int = 1, progress: Callable = lambda: None) -> tuple[float, float]:
+def time_it(day: str, iterations: int = 1, progress: Callable[..., Any] = lambda: None) -> tuple[float, float]:
     module = import_module(day)
     input_str = read_input(day)
 
@@ -76,7 +80,7 @@ def time_it(day: str, iterations: int = 1, progress: Callable = lambda: None) ->
 
 
 @app.command()
-def benchmark(iterations: int = 10, days: list[DayType] = []) -> None:
+def benchmark(iterations: int = 10, days: list[str] = []) -> None:
     table = Table(title=f"AOC 2023 - Timings\n({iterations:,} iterations)")
 
     table.add_column("Day", justify="center", style="bold")
@@ -110,7 +114,7 @@ def profile(day: DayType, part: PartType, sort: SortType = SortType.CALLS):
         Stats(profile).strip_dirs().sort_stats(sort).print_stats()
 
 
-def run_day(day: str, progress: Callable = lambda: None) -> tuple[float, float]:
+def run_day(day: str, progress: Callable[..., Any] = lambda: None) -> tuple[float, float]:
     module = import_module(day)
     input_str = read_input(day)
 

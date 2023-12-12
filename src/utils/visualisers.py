@@ -10,5 +10,8 @@ def draw_grid(grid: GridType, missing: str = "."):
 
     for y in range(min(height), max(height) + 1):
         for x in range(min(width), max(width) + 1):
-            print(grid[x, y], end="")
+            if (x, y) in grid:
+                print(grid[x, y], end="")
+            else:
+                print(missing, end="")
         print()

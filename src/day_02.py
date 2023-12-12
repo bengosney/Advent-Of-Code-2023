@@ -1,12 +1,17 @@
 # Standard Library
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 
 # First Party
 from utils import no_input_skip, read_input
 
-Limit = namedtuple("Limit", ["red", "green", "blue"])
+
+@dataclass(frozen=True)
+class Limit:
+    red: int
+    green: int
+    blue: int
 
 
 @dataclass(frozen=True, eq=False)

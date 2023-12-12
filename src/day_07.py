@@ -77,7 +77,7 @@ class Hand:
 
 def part_1(input: str) -> int:
     hands = sorted(Hand.parse(input))
-    totals = []
+    totals: list[int] = []
     for rank, hand in enumerate(hands, 1):
         totals.append(hand.bid * rank)
 
@@ -86,7 +86,7 @@ def part_1(input: str) -> int:
 
 def part_2(input: str) -> int:
     hands = sorted(Hand.parse(input, True))
-    totals = []
+    totals: list[int] = []
     for rank, hand in enumerate(hands, 1):
         totals.append(hand.bid * rank)
 

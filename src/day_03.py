@@ -38,7 +38,7 @@ class Grid:
                 yield pair
 
     @classmethod
-    def build(cls, input) -> Self:
+    def build(cls, input: str) -> Self:
         grid = cls()
         for y, line in enumerate(input.splitlines()):
             for x, char in enumerate(line):
@@ -91,7 +91,7 @@ def part_2(input: str) -> int:
     ratio = 0
     for loc in product(grid.height, grid.width):
         if grid[loc] == "*":
-            numbers = set()
+            numbers: set[int] = set()
             for pair in Grid.around(*loc):
                 if grid[pair].isnumeric():
                     numbers.add(collect_number(*pair))

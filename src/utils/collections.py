@@ -14,7 +14,7 @@ class CachingDict(dict[K, T], Generic[K, T]):
         return super().__init__()
 
     def __missing__(self, __key: K) -> T:
-        dict.__setitem__(self, __key, self.cache_factory(__key))
+        self.__setitem__(__key, self.cache_factory(__key))
         return self[__key]
 
 

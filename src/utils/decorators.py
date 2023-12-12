@@ -1,32 +1,18 @@
 # Standard Library
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from functools import wraps
-from typing import TypeVar
+from typing import Any
 
 # Third Party
 import pytest
 
 
-def no_input_skip(f):
+def no_input_skip(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return f(*args, **kwargs)
         except FileNotFoundError:
             pytest.skip("Input file not found")
 
     return wrapper
-
-
-T = TypeVar("T")
-
-
-def collect_and(function: Callable[[Iterable[T]], T]):
-    def decorator_collect_and(func):
-        @wraps(func)
-        def wrapper_collect_and(*args, **kwargs):
-            return function(func(*args, **kwargs))
-
-        return wrapper_collect_and
-
-    return decorator_collect_and

@@ -19,7 +19,7 @@ def part_1(input: str) -> int:
     times, distances = input.splitlines()
     results = zip([int(t) for t in times.split() if t.isdigit()], [int(d) for d in distances.split() if d.isdigit()])
 
-    wins = []
+    wins: list[int] = []
     for time, distance in results:
         wins.append(win_count(time, distance))
 

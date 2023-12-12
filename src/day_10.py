@@ -55,7 +55,7 @@ class Moves:
             "S": cls.directions(),
         }
         if pipe in valid_dirs:
-            return valid_dirs[pipe]
+            return list(valid_dirs[pipe])
         raise Exception(f"Invalid pipe: {pipe}")
 
     @staticmethod
@@ -78,8 +78,8 @@ class Moves:
 def build_path(pipe_map: dict[tuple[int, int], str], start: tuple[int, int]) -> list[tuple[int, int]]:
     current = start
     prev = None
-    path = []
-    for i in count():
+    path: list[tuple[int, int]] = []
+    for _ in count():
         for dir in Moves.valid_dirs(pipe_map[current]):
             if dir == prev:
                 continue
@@ -102,7 +102,7 @@ def build_path(pipe_map: dict[tuple[int, int], str], start: tuple[int, int]) -> 
 
 def part_1(input: str) -> int:
     start = 0, 0
-    pipe_map = defaultdict(lambda: ".")
+    pipe_map: dict[tuple[int, int], str] = defaultdict(lambda: ".")
     for y, line in enumerate(input.splitlines()):
         for x, char in enumerate(line):
             pipe_map[x, y] = char
@@ -122,7 +122,7 @@ def path_length(path: list[tuple[int, int]]) -> float:
 
 def part_2(input: str) -> int:
     start = 0, 0
-    pipe_map = defaultdict(lambda: ".")
+    pipe_map: dict[tuple[int, int], str] = defaultdict(lambda: ".")
     for y, line in enumerate(input.splitlines()):
         for x, char in enumerate(line):
             pipe_map[x, y] = char

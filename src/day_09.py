@@ -23,7 +23,7 @@ def extend(seq: list[int]) -> list[int]:
 
 
 def part_1(input: str) -> int:
-    answers = []
+    answers: list[int] = []
     for line in input.splitlines():
         extended = extend(list(map(int, line.split())))
         answers.append(extended[-1])
@@ -32,7 +32,7 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    answers = []
+    answers: list[int] = []
     for line in input.splitlines():
         extended = extend(list(map(int, line.split())))
         answers.append(extended[0])
