@@ -10,13 +10,18 @@ match_chunk = re.compile(r"^\.*#+|^\.*\?")
 
 
 @lru_cache
-def find(contiguous_groups, springs):
+def find(contiguous_groups: tuple[int, ...], springs: str) -> int:
     if len(contiguous_groups) == 0:
         return 0 if "#" in springs else 1
+
     if len(springs) == 0 or ("#" not in springs and "?" not in springs):
         return 0
+
     found = re.match(rf"^\.*[?#]{{{contiguous_groups[0]}}}(?!#)", springs)
     found_chunk = match_chunk.match(springs)
+
+    if found_chunk is None:
+        return 0
 
     if found is None:
         return 0 if no_more.match(springs) else find(contiguous_groups, springs[len(found_chunk[0]) :])
@@ -40,8 +45,8 @@ def part_2(input: str) -> int:
     posibles = 0
     for row in input.splitlines():
         springs, contiguous_groups = row.split()
-        contiguous_groups = list(map(int, contiguous_groups.split(","))) * 5
-        posibles += find(tuple(contiguous_groups), "?".join([springs] * 5))
+        unfolded_contiguous_groups = list(map(int, contiguous_groups.split(","))) * 5
+        posibles += find(tuple(unfolded_contiguous_groups), "?".join([springs] * 5))
 
     return posibles
 
@@ -74,10 +79,10 @@ def test_part_1_real():
     assert part_1(real_input) == 7118
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 7030194981795
 
 
 # -- Main
