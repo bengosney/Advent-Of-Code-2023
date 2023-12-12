@@ -5,54 +5,45 @@ from functools import lru_cache
 # First Party
 from utils import no_input_skip, read_input
 
-# Third Party
-from icecream import ic
-
-
-def build_regex(contigs):
-    regex = r"^(\?|\.)*"
-    for count in contigs:
-        regex += rf"(\?|#){{{count}}}(\?|\.)*"
-    ic(rf"{regex}$")
-    return re.compile(rf"{regex}$")
-
-
 no_more = re.compile(r"^\.*#\.*")
 match_chunk = re.compile(r"^\.*#+|^\.*\?")
 
 
 @lru_cache
-def find(contigs, string):
-    if len(contigs) == 0:
-        return 0 if "#" in string else 1
-    if len(string) == 0 or ("#" not in string and "?" not in string):
+def find(contiguous_groups, springs):
+    if len(contiguous_groups) == 0:
+        return 0 if "#" in springs else 1
+    if len(springs) == 0 or ("#" not in springs and "?" not in springs):
         return 0
-    found = re.match(rf"^\.*[?#]{{{contigs[0]}}}(?!#)", string)
-    found_chunk = match_chunk.match(string)
+    found = re.match(rf"^\.*[?#]{{{contiguous_groups[0]}}}(?!#)", springs)
+    found_chunk = match_chunk.match(springs)
 
     if found is None:
-        return 0 if no_more.match(string) else find(contigs, string[len(found_chunk[0]) :])
+        return 0 if no_more.match(springs) else find(contiguous_groups, springs[len(found_chunk[0]) :])
 
-    ans1 = find(contigs[1:], string[len(found[0]) + 1 :])
-    ans2 = 0 if no_more.match(string) else find(contigs, string[len(found_chunk[0]) :])
+    ans1 = find(contiguous_groups[1:], springs[len(found[0]) + 1 :])
+    ans2 = 0 if no_more.match(springs) else find(contiguous_groups, springs[len(found_chunk[0]) :])
 
     return ans1 + ans2
 
 
 def part_1(input: str) -> int:
     posibles = 0
-    rows = []
     for row in input.splitlines():
-        springs, contig_string = row.split()
-        contig = tuple(map(int, contig_string.split(",")))
-        rows.append((springs, contig))
-        posibles += find(contig, springs)
+        springs, contiguous_groups = row.split()
+        posibles += find(tuple(map(int, contiguous_groups.split(","))), springs)
 
     return posibles
 
 
 def part_2(input: str) -> int:
-    pass
+    posibles = 0
+    for row in input.splitlines():
+        springs, contiguous_groups = row.split()
+        contiguous_groups = list(map(int, contiguous_groups.split(","))) * 5
+        posibles += find(tuple(contiguous_groups), "?".join([springs] * 5))
+
+    return posibles
 
 
 # -- Tests
@@ -72,9 +63,9 @@ def test_part_1():
     assert part_1(test_input) == 21
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 525152
 
 
 @no_input_skip
