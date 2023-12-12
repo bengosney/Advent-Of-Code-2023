@@ -2,8 +2,8 @@ GridType = dict[tuple[int, int], str]
 
 
 def draw_grid(grid: GridType, missing: str = "."):
-    width = set()
-    height = set()
+    width: set[int] = set()
+    height: set[int] = set()
     for x, y in grid.keys():
         width.add(x)
         height.add(y)
