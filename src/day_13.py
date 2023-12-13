@@ -1,5 +1,3 @@
-# Standard Library
-
 # First Party
 from utils import no_input_skip, read_input
 
