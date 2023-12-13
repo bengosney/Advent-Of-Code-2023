@@ -19,24 +19,25 @@ def reflect(rows: list[str]) -> int:
     return 0
 
 
-def reflect_smudg(rows: list[str], error_tolerance: int = 0) -> int:
+def reflect_smudge(rows: list[str], error_tolerance: int = 0) -> int:
     length = len(rows) - 1
     for i in range(length):
         p = min(length - i, i)
         m = 0 if (length - i) > i else 1
-        a = set(rows[(i - p) + m : i + 1])
-        b = set(rows[i + 1 : i + p + 2][::-1])
 
-        if len(a - b) == 0:
-            return i + 1
-        if len(a - b) == 1:
-            left, right = list(a - b), list(b - a)
-            diff = 0
-            for i in range(len(left[0])):
-                if left[0][i] != right[0][i]:
+        left = rows[(i - p) + m : i + 1]
+        right = rows[i + 1 : i + p + 2][::-1]
+
+        diff = 0
+        for c in range(len(left)):
+            if left[c] == right[c]:
+                continue
+            for p in range(len(left[c])):
+                if left[c][p] != right[c][p]:
                     diff += 1
-            if diff <= 1:
-                return i + 1
+
+        if diff == 1:
+            return i + 1
     return 0
 
 
@@ -59,7 +60,7 @@ def part_2(input: str) -> int:
         cols = rotate(puzzle).splitlines()
         rows = puzzle.splitlines()
 
-        answer += reflect_smudg(cols, 1) + (reflect_smudg(rows, 1) * 100)
+        answer += reflect_smudge(cols, 1) + (reflect_smudge(rows, 1) * 100)
 
     return answer
 
