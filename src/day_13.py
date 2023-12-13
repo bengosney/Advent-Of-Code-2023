@@ -25,18 +25,16 @@ def reflect_smudge(rows: list[str], error_tolerance: int = 0) -> int:
         p = min(length - i, i)
         m = 0 if (length - i) > i else 1
 
-        left = rows[(i - p) + m : i + 1]
-        right = rows[i + 1 : i + p + 2][::-1]
+        lefts = rows[(i - p) + m : i + 1]
+        rights = rows[i + 1 : i + p + 2][::-1]
 
         diff = 0
-        for c in range(len(left)):
-            if left[c] == right[c]:
+        for left, right in zip(lefts, rights):
+            if left == right:
                 continue
-            for p in range(len(left[c])):
-                if left[c][p] != right[c][p]:
-                    diff += 1
+            diff += sum([1 for p in range(len(left)) if left[p] != right[p]])
 
-        if diff == 1:
+        if diff == error_tolerance:
             return i + 1
     return 0
 
@@ -105,7 +103,7 @@ def test_part_1_real():
 @no_input_skip
 def test_part_2_real():
     real_input = read_input(__file__)
-    assert part_2(real_input) > 10409
+    assert part_2(real_input) == 32069
 
 
 # -- Main
