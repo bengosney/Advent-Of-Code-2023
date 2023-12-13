@@ -25,14 +25,14 @@ def reflect_smudge(rows: list[str], error_tolerance: int = 0) -> int:
         p = min(length - i, i)
         m = 0 if (length - i) > i else 1
 
-        lefts = rows[(i - p) + m : i + 1]
-        rights = rows[i + 1 : i + p + 2][::-1]
+        left_rows = rows[(i - p) + m : i + 1]
+        right_rows = rows[i + 1 : i + p + 2][::-1]
 
         diff = 0
-        for left, right in zip(lefts, rights):
-            if left == right:
-                continue
-            diff += sum([1 for p in range(len(left)) if left[p] != right[p]])
+        for left, right in zip(left_rows, right_rows):
+            diff += sum([1 for l, r in zip(left, right) if l != r])
+            if diff > error_tolerance:
+                break
 
         if diff == error_tolerance:
             return i + 1
