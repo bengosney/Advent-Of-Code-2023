@@ -109,6 +109,5 @@ def test_part_2_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
-    test_part_2()
     print(f"Part1: {part_1(real_input)}")
     print(f"Part2: {part_2(real_input)}")
