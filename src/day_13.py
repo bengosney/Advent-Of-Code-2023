@@ -1,8 +1,7 @@
 # Standard Library
-from itertools import pairwise
 
 # First Party
-from utils import draw_grid, no_input_skip, read_input  # noqa
+from utils import no_input_skip, read_input
 
 
 def rotate(string: str) -> str:
@@ -12,10 +11,10 @@ def rotate(string: str) -> str:
 
 def reflect(rows: list[str]) -> int:
     length = len(rows) - 1
-    for i, (line1, line2) in enumerate(pairwise(rows)):
+    for i in range(length):
         p = min(length - i, i)
         m = 0 if (length - i) > i else 1
-        if line1 == line2 and rows[(i - p) + m : i + 1] == rows[i + 1 : i + p + 2][::-1]:
+        if rows[(i - p) + m : i + 1] == rows[i + 1 : i + p + 2][::-1]:
             return i + 1
     return 0
 
@@ -63,8 +62,8 @@ def test_part_1():
 
 
 # def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+#    test_input = get_example_input()
+#    assert part_2(test_input) == 400
 
 
 @no_input_skip
