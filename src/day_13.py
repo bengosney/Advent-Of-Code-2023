@@ -4,46 +4,30 @@ from itertools import pairwise
 # First Party
 from utils import draw_grid, no_input_skip, read_input  # noqa
 
-# Third Party
-from icecream import ic
-
 
 def rotate(string: str) -> str:
     grid = [list(line) for line in string.splitlines()]
     return "\n".join(["".join(line) for line in zip(*grid[::-1])])
 
 
-def reflect(puzzle: str) -> int:
-    cols = rotate(puzzle).splitlines()
-    for i, (line1, line2) in enumerate(pairwise(cols)):
-        leng = len(cols) - 1
-        p = min(leng - i, i)
-        m = 0 if (leng - i) > i else 1
-        if line1 == line2 and cols[(i - p) + m : i + 1] == cols[i + 1 : i + p + 2][::-1]:
-            ic("V", i, cols[i - p : i], cols[i : i + p])
-            return i + 1
-
-    rows = puzzle.splitlines()
+def reflect(rows: list[str]) -> int:
+    length = len(rows) - 1
     for i, (line1, line2) in enumerate(pairwise(rows)):
-        leng = len(rows) - 1
-        p = min(leng - i, i)
-        m = 0 if (leng - i) > i else 1
+        p = min(length - i, i)
+        m = 0 if (length - i) > i else 1
         if line1 == line2 and rows[(i - p) + m : i + 1] == rows[i + 1 : i + p + 2][::-1]:
-            ic("H", i, rows[i - p : i], rows[i : i + p])
-            return (i + 1) * 100
-
-    raise Exception("No reflections found")
+            return i + 1
+    return 0
 
 
 def part_1(input: str) -> int:
     puzzles = input.split("\n\n")
     answer = 0
     for puzzle in puzzles:
-        try:
-            answer += reflect(puzzle)
-        except Exception as e:
-            print(puzzle + "\n")
-            raise e
+        cols = rotate(puzzle).splitlines()
+        rows = puzzle.splitlines()
+
+        answer += reflect(cols) + (reflect(rows) * 100)
 
     return answer
 
