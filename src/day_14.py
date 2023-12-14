@@ -1,7 +1,7 @@
 # Standard Library
 from collections import defaultdict
 from collections.abc import Iterable
-from enum import Enum
+from functools import lru_cache
 
 # First Party
 from utils import no_input_skip, read_input
@@ -16,13 +16,7 @@ def parse(input: str) -> tuple[dict[tuple[int, int], str], int, int]:
     return platform, width, height
 
 
-class Directions(Enum):
-    NORTH = (0, -1)
-    WEST = (-1, 0)
-    SOUTH = (0, 1)
-    EAST = (1, 0)
-
-
+@lru_cache
 def _range(inc: int, size: int) -> Iterable[int]:
     return range(size, -1, -1) if inc == 1 else range(size)
 
@@ -56,28 +50,14 @@ def hash_platform(platform: dict[tuple[int, int], str]) -> str:
 
 def cycles(platform: dict[tuple[int, int], str], rounds: int, width: int, height: int) -> dict[tuple[int, int], str]:
     def roll_dirs(platform: dict[tuple[int, int], str]) -> dict[tuple[int, int], str]:
-        for dir in Directions:
-            platform = roll(platform, dir.value, width, height)
+        for dir in [(0, -1), (-1, 0), (0, 1), (1, 0)]:
+            platform = roll(platform, dir, width, height)
         return platform
-
-    for _ in range(rounds):
-        platform = roll_dirs(platform)
-    return platform
-
-
-def part_2(input: str, rounds: int = 1_000_000_000) -> int:
-    platform, width, height = parse(input)
 
     cache: dict[str, int] = {}
 
-    def roll_dirs(platform: dict[tuple[int, int], str]) -> dict[tuple[int, int], str]:
-        for dir in Directions:
-            platform = roll(platform, dir.value, width, height)
-        return platform
-
     for i in range(rounds):
         platform = roll_dirs(platform)
-
         platform_hash = hash_platform(platform)
         if platform_hash not in cache:
             cache[platform_hash] = i
@@ -91,6 +71,13 @@ def part_2(input: str, rounds: int = 1_000_000_000) -> int:
             while hash_platform(platform) != search_hash:
                 platform = roll_dirs(platform)
             break
+    return platform
+
+
+def part_2(input: str, rounds: int = 1_000_000_000) -> int:
+    platform, width, height = parse(input)
+
+    platform = cycles(platform, rounds, width, height)
 
     weight = 0
     for y in range(height):
