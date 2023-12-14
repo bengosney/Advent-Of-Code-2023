@@ -1,5 +1,6 @@
 # Standard Library
 from collections import defaultdict
+from collections.abc import Iterable
 from enum import Enum
 
 # First Party
@@ -8,13 +9,10 @@ from utils import no_input_skip, read_input
 
 def parse(input: str) -> tuple[dict[tuple[int, int], str], int, int]:
     platform: dict[tuple[int, int], str] = defaultdict(lambda: "!")
-    width = 0
-    height = 0
     for y, row in enumerate(input.splitlines()):
-        height = y + 1
         for x, thing in enumerate(row):
-            width = max(width, x + 1)
             platform[x, y] = thing
+    width, height = map(lambda x: x + 1, max(platform))
     return platform, width, height
 
 
@@ -25,24 +23,13 @@ class Directions(Enum):
     EAST = (1, 0)
 
 
+def _range(inc: int, size: int) -> Iterable[int]:
+    return range(size, -1, -1) if inc == 1 else range(size)
+
+
 def roll(platform: dict[tuple[int, int], str], dir: tuple[int, int], width: int, height: int) -> dict[tuple[int, int], str]:
-    match dir:
-        case (0, -1):  # North
-            y_range = range(height)
-            x_range = range(width)
-        case (-1, 0):  # West
-            y_range = range(height)
-            x_range = range(width)
-        case (0, 1):  # South
-            y_range = range(height, -1, -1)
-            x_range = range(width)
-        case (1, 0):  # East
-            y_range = range(height)
-            x_range = range(width, -1, -1)
-        case _:
-            raise Exception(f"What dir is this? {dir}")
-    for y in y_range:
-        for x in x_range:
+    for y in _range(dir[1], height):
+        for x in _range(dir[0], width):
             if platform[x, y] == "O":
                 rx, ry = x, y
                 while platform[rx + dir[0], ry + dir[1]] == ".":
