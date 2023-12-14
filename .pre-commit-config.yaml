@@ -52,4 +52,4 @@ repos:
         language: system
         entry: cog -cr src/aoc.py
         name: cli-update
-        files: src/day_\.*\.py
+        files: src/day_.*\.py
