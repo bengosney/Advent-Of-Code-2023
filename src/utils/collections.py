@@ -1,15 +1,15 @@
 # Standard Library
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 K = TypeVar("K")
 T = TypeVar("T")
 
 
 class CachingDict(dict[K, T], Generic[K, T]):
-    cache_factory: Callable[[Any], T]
+    cache_factory: Callable[[K], T]
 
-    def __init__(self, cache_factory: Callable[[Any], T]) -> None:
+    def __init__(self, cache_factory: Callable[[K], T]) -> None:
         self.cache_factory = cache_factory
         return super().__init__()
 

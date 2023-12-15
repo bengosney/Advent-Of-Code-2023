@@ -4,7 +4,7 @@ from collections import OrderedDict, defaultdict
 from functools import reduce
 
 # First Party
-from utils import no_input_skip, read_input
+from utils import CachingDict, no_input_skip, read_input
 
 
 def hash_algo(input: str) -> int:
@@ -18,9 +18,10 @@ def part_1(input: str) -> int:
 def part_2(input: str) -> int:
     regex = re.compile(r"([a-z]+)(=|-)(\d*)")
     boxes: dict[int, dict[str, int]] = defaultdict(OrderedDict)
+    hashes = CachingDict[str, int](lambda __key: hash_algo(__key))
     for instruction in regex.finditer(input):
         label, op, num = instruction.groups()
-        box_num = hash_algo(label)
+        box_num = hashes[label]
         if op == "-" and label in boxes[box_num]:
             del boxes[box_num][label]
         if op == "=":
