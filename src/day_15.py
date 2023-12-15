@@ -1,24 +1,18 @@
 # Standard Library
 import re
 from collections import OrderedDict, defaultdict
+from functools import reduce
 
 # First Party
 from utils import no_input_skip, read_input
 
 
 def hash_algo(input: str) -> int:
-    res: int = 0
-    for c in input:
-        res = ((res + ord(c)) * 17) % 256
-    return res
+    return reduce(lambda r, c: ((r + ord(c)) * 17) % 256, input, 0)
 
 
 def part_1(input: str) -> int:
-    ans = 0
-    for part in input.split(","):
-        ans += hash_algo(part)
-
-    return ans
+    return sum(hash_algo(part) for part in input.split(","))
 
 
 def part_2(input: str) -> int:
