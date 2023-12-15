@@ -1,3 +1,7 @@
+# Standard Library
+import re
+from collections import OrderedDict, defaultdict
+
 # First Party
 from utils import no_input_skip, read_input
 
@@ -18,7 +22,22 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    regex = re.compile(r"([a-z]+)(=|-)(\d*)")
+    boxes: dict[int, dict[str, int]] = defaultdict(OrderedDict)
+    for instruction in regex.finditer(input):
+        label, op, num = instruction.groups()
+        box_num = hash_algo(label)
+        if op == "-" and label in boxes[box_num]:
+            del boxes[box_num][label]
+        if op == "=":
+            boxes[box_num][label] = int(num)
+
+    power = 0
+    for num, contents in boxes.items():
+        for slot, focal_length in enumerate(contents.values(), 1):
+            power += (num + 1) * slot * focal_length
+
+    return power
 
 
 # -- Tests
@@ -37,9 +56,9 @@ def test_part_1():
     assert part_1(test_input) == 1320
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 145
 
 
 @no_input_skip
@@ -48,10 +67,10 @@ def test_part_1_real():
     assert part_1(real_input) == 520500
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 213097
 
 
 # -- Main
