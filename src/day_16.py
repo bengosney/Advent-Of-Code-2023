@@ -8,10 +8,10 @@ from utils import no_input_skip, read_input
 
 Vec2 = tuple[int, int]
 
-UP = (0, -1)
-DOWN = (0, 1)
-LEFT = (-1, 0)
-RIGHT = (1, 0)
+UP: Vec2 = (0, -1)
+DOWN: Vec2 = (0, 1)
+LEFT: Vec2 = (-1, 0)
+RIGHT: Vec2 = (1, 0)
 
 
 def add(a: Vec2, b: Vec2) -> Vec2:
