@@ -15,3 +15,4 @@ def draw_grid(grid: GridType, missing: str = "."):
             else:
                 print(missing, end="")
         print()
+    print()
