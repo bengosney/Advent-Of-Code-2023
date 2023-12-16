@@ -25,11 +25,12 @@ Beam = tuple[Vec2, Vec2]
 
 def part_1(input: str) -> int:
     grid: dict[Vec2, str] = defaultdict(lambda: "!")
-    energized: dict[Vec2, str] = {}
-    history: set[tuple[Vec2, Vec2]] = set()
     for y, line in enumerate(input.splitlines()):
         for x, c in enumerate(line):
             grid[x, y] = c
+
+    energized: dict[Vec2, str] = {}
+    history: set[tuple[Vec2, Vec2]] = set()
 
     beams: Deque[Beam] = deque([((0, 0), RIGHT)])
 
@@ -65,7 +66,59 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    grid: dict[Vec2, str] = defaultdict(lambda: "!")
+    for y, line in enumerate(input.splitlines()):
+        for x, c in enumerate(line):
+            grid[x, y] = c
+
+    scores: list[int] = []
+
+    starts: list[tuple[Vec2, Vec2]] = []
+    max_x, max_y = max(grid)
+    for x in range(max_x):
+        starts.append(((x, 0), DOWN))
+        starts.append(((x, max_y), UP))
+    for y in range(max_y):
+        starts.append(((0, y), RIGHT))
+        starts.append(((max_x, y), LEFT))
+
+    for start in starts:
+        energized: dict[Vec2, str] = {}
+        history: set[tuple[Vec2, Vec2]] = set()
+
+        beams: Deque[Beam] = deque([start])
+
+        while len(beams):
+            current, direction = beams.pop()
+            while grid[current] != "!":
+                if grid[current] == "!" or (current, direction) in history:
+                    break
+
+                history.add((current, direction))
+
+                if grid[current] == "|" and direction in [LEFT, RIGHT]:
+                    beams.append((add(current, UP), UP))
+                    direction = DOWN
+
+                if grid[current] == "-" and direction in [UP, DOWN]:
+                    beams.append((add(current, LEFT), LEFT))
+                    direction = RIGHT
+
+                if grid[current] == "/" and direction in mirror_map_fs:
+                    direction = mirror_map_fs[direction]
+
+                if grid[current] == "\\" and direction in mirror_map_bs:
+                    direction = mirror_map_bs[direction]
+
+                energized[current] = "#"
+                if grid[current] == ".":
+                    grid[current] = "*"
+
+                current = add(current, direction)
+
+        scores.append(list(energized.values()).count("#"))
+
+    return max(scores)
 
 
 # -- Tests
@@ -89,9 +142,9 @@ def test_part_1():
     assert part_1(test_input) == 46
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 51
 
 
 @no_input_skip
