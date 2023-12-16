@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "rich",
     "typer[all]",
-#    "-e .",
+    #    "-e .",
 ]
 
 [project.optional-dependencies]
@@ -21,6 +21,7 @@ dev = [
     "pip-tools",
     "pre-commit",
     "specialist",
+    "ruff",
 ]
 
 [project.urls]
@@ -40,3 +41,62 @@ target-version = ['py311']
 
 [tool.pycln]
 all = true
+
+[tool.ruff]
+line-length = 128
+target-version = "py312"
+select = [
+    "F",
+    "E",
+    "W",
+    "I",
+    "UP",
+    "PL",
+    "RUF",
+    "ERA",
+    "TID",
+    "TCH",
+
+    "YTT",
+    #"ANN",
+    "ASYNC",
+    "BLE",
+    "B",
+    "COM",
+    "C4",
+    "DTZ",
+    "T10",
+    "DJ",
+    "EXE",
+    "FA",
+    "ISC",
+    "ICN",
+    "G",
+    "PIE",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SLF",
+    "SLOT",
+    "SIM",
+    "TID",
+    "TCH",
+    "INT",
+    "TD",
+    "FIX",
+]
+
+[tool.ruff.lint]
+ignore = [
+    "E203",
+    "F821",
+    "E211",
+    "E741",
+    "PLR2004",
+    "ERA001",
+    "SIM108",
+    "B905",
+    "B019",
+]

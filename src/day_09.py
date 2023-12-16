@@ -13,7 +13,7 @@ def extend(seq: list[int]) -> list[int]:
         for s in range(len(seqs[i]) - 1):
             seqs[i + 1].append(seqs[i][s + 1] - seqs[i][s])
 
-        if all([i == 0 for i in seqs[i]]):
+        if all(i == 0 for i in seqs[i]):
             break
 
     for n in range(len(seqs) - 2, -1, -1):
@@ -49,24 +49,24 @@ def get_example_input() -> str:
 10 13 16 21 30 45"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 114
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 2
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 1938800261
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 1112
 

@@ -10,14 +10,14 @@ from statistics import mean
 from time import time
 from typing import Any
 
-# First Party
-from utils import read_input
-
 # Third Party
 import typer
 from rich.console import Console
 from rich.progress import Progress
 from rich.table import Table
+
+# First Party
+from utils import read_input
 
 app = typer.Typer()
 
@@ -84,7 +84,7 @@ def time_it(day: str, iterations: int = 1, progress: Callable[..., Any] = lambda
 
 
 @app.command()
-def benchmark(iterations: int = 10, days: list[str] = []) -> None:
+def benchmark(iterations: int = 10, days: list[str] | None = None) -> None:
     table = Table(title=f"AOC 2023 - Timings\n({iterations:,} iterations)")
 
     table.add_column("Day", justify="center", style="bold")
@@ -109,7 +109,7 @@ def benchmark(iterations: int = 10, days: list[str] = []) -> None:
 
 
 @app.command()
-def profile(day: DayType, part: PartType, sort: SortType = SortType.CALLS):
+def profile(day: DayType, part: PartType, sort: SortType = SortType.CALLS) -> None:
     module = import_module(day)
     input_str = read_input(day)
 
@@ -125,10 +125,10 @@ def run_day(day: str, progress: Callable[..., Any] = lambda: None) -> tuple[floa
     part_1 = 0
     part_2 = 0
     with contextlib.suppress(Exception):
-        part_1 = getattr(module, "part_1")(input_str)
+        part_1 = module.part_1(input_str)
         progress()
 
-        part_2 = getattr(module, "part_2")(input_str)
+        part_2 = module.part_2(input_str)
         progress()
 
     return part_1, part_2
@@ -139,7 +139,7 @@ def day_from_name(file_name: str) -> int:
 
 
 @app.command()
-def answers(days: list[int] = []) -> None:
+def answers(days: list[int] | None = None) -> None:
     table = Table(title="Advent of Code 2023 - Answers")
 
     table.add_column("Day", justify="center", style="bold")

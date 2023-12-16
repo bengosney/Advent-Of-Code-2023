@@ -63,24 +63,24 @@ def get_example_input() -> str:
 ?###???????? 3,2,1"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 21
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 525152
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 7118
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 7030194981795
 

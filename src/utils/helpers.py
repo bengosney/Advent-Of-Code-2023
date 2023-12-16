@@ -80,13 +80,3 @@ def test_ocr_letters():
             for x, cell in enumerate(line):
                 grid[(x, y)] = cell
         assert ocr(grid) == letter
-
-
-# def test_ocr_joined():
-#    grid: dict[tuple[int, int], str] = {}
-#    chars = zip(ALPHABET['A'].split("\n"), ALPHABET['B'].split("\n"))
-#    for y, line in enumerate(chars.split("\n")):
-#        for x, cell in enumerate(line):
-#            grid[(x, y)] = cell
-#
-#    assert ocr(grid) == "AB"

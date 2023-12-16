@@ -2,11 +2,11 @@
 from utils import read_input, no_input_skip # noqa
 
 
-def part_1(input: str) -> int:
+def part_1(puzzle: str) -> int:
     pass
 
 
-def part_2(input: str) -> int:
+def part_2(puzzle: str) -> int:
     pass
 
 
@@ -18,24 +18,24 @@ def get_example_input() -> str:
     """
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) is not None
 
 
-# def test_part_2():
+# def test_part_2() -> None:
 #     test_input = get_example_input()
 #     assert part_2(test_input) is not None
 
 
 # @no_input_skip
-# def test_part_1_real():
+# def test_part_1_real() -> None:
 #     real_input = read_input(__file__)
 #     assert part_1(real_input) is not None
 
 
 # @no_input_skip
-# def test_part_2_real():
+# def test_part_2_real() -> None:
 #     real_input = read_input(__file__)
 #     assert part_2(real_input) is not None
 

@@ -44,9 +44,9 @@ class Hand:
     @cached_property
     def tiebreak(self) -> str:
         if not self.joker:
-            scores = dict({str(v): k + 2 for k, v in enumerate(chain(range(2, 10), ["T", "J", "Q", "K", "A"]))})
+            scores = {str(v): k + 2 for k, v in enumerate(chain(range(2, 10), ["T", "J", "Q", "K", "A"]))}
         else:
-            scores = dict({str(v): k + 2 for k, v in enumerate(chain(["J"], range(2, 10), ["T", "Q", "K", "A"]))})
+            scores = {str(v): k + 2 for k, v in enumerate(chain(["J"], range(2, 10), ["T", "Q", "K", "A"]))}
         return "".join([f"{scores[card]:02}" for card in self.cards])
 
     @lru_cache
@@ -67,7 +67,7 @@ class Hand:
     @classmethod
     def from_line(cls, line: str, joker: bool = False) -> Self:
         cards, bid = line.split()
-        return cls(tuple(list(cards)), int(bid), joker)
+        return cls(tuple(cards), int(bid), joker)
 
     @classmethod
     def parse(cls, input: str, joker: bool = False) -> Generator[Self, None, None]:
@@ -104,24 +104,24 @@ KTJJT 220
 QQQJA 483"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 6440
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 5905
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 248217452
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 245576185
 

@@ -1,8 +1,5 @@
-# Standard Library
 from collections import deque
-from typing import Deque
 
-# First Party
 from utils import no_input_skip, read_input
 
 Vec2 = tuple[int, int]
@@ -27,7 +24,7 @@ def energize(start: Vec2, direction: Vec2, grid: dict[Vec2, str]) -> int:
     energized: set[Vec2] = set()
     history: set[tuple[Vec2, Vec2]] = set()
 
-    beams: Deque[Beam] = deque([(start, direction)])
+    beams: deque[Beam] = deque([(start, direction)])
 
     while len(beams):
         current, direction = beams.pop()
@@ -54,18 +51,18 @@ def energize(start: Vec2, direction: Vec2, grid: dict[Vec2, str]) -> int:
     return len(energized)
 
 
-def part_1(input: str) -> int:
+def part_1(puzzle: str) -> int:
     grid: dict[Vec2, str] = {}
-    for y, line in enumerate(input.splitlines()):
+    for y, line in enumerate(puzzle.splitlines()):
         for x, c in enumerate(line):
             grid[x, y] = c
 
     return energize((0, 0), RIGHT, grid)
 
 
-def part_2(input: str) -> int:
+def part_2(puzzle: str) -> int:
     grid: dict[Vec2, str] = {}
-    for y, line in enumerate(input.splitlines()):
+    for y, line in enumerate(puzzle.splitlines()):
         for x, c in enumerate(line):
             grid[x, y] = c
 
@@ -95,24 +92,24 @@ def get_example_input() -> str:
 ..//.|...."""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 46
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 51
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 7482
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 7896
 

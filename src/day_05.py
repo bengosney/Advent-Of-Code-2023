@@ -2,12 +2,12 @@
 from collections.abc import Generator
 from itertools import batched
 
+# Third Party
+import pytest
+
 # First Party
 from utils import no_input_skip, read_input
 from utils.collections import CachingDict
-
-# Third Party
-import pytest
 
 
 def part_1(input: str) -> int:
@@ -15,7 +15,8 @@ def part_1(input: str) -> int:
     seeds = list(map(int, lines[0].split()[1:]))
 
     results: list[int] = []
-    for seed in seeds:
+    for start_seed in seeds:
+        seed = start_seed
         found = False
         for line in lines[2:]:
             if line == "" or ":" in line:
@@ -115,13 +116,13 @@ humidity-to-location map:
 56 93 4"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 35
 
 
 @pytest.mark.parametrize(
-    "test_input, expected",
+    ("test_input", "expected"),
     [
         ([(20, 30), (40, 50)], [(20, 30)]),
         ([(20, 30), (25, 50)], [(20, 24), (25, 30)]),
@@ -139,19 +140,19 @@ def test_splitting(test_input: list[tuple[int, int]], expected: list[tuple[int, 
     assert list(split(*test_input)) == expected
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 46
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 510109797
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 9622622
 

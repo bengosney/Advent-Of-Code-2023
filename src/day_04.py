@@ -28,7 +28,7 @@ class Card:
 
 
 def parse(input: str) -> Iterable[Card]:
-    for line in re.sub(r"[ ]+", " ", input, 0, re.MULTILINE).splitlines():
+    for line in re.sub(r"[ ]+", " ", input, flags=re.MULTILINE).splitlines():
         yield Card.parse(line)
 
 
@@ -64,24 +64,24 @@ Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 13
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 30
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 23673
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 12263631
 

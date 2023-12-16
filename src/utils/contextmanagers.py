@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def time_limit(seconds: int) -> Generator[None, None, None]:
-    def signal_handler(signum, frame):
+    def signal_handler(signum, frame) -> None:
         raise TimeoutError
 
     signal.signal(signal.SIGALRM, signal_handler)

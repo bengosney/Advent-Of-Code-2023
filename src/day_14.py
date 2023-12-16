@@ -12,7 +12,7 @@ def parse(input: str) -> tuple[dict[tuple[int, int], str], int, int]:
     for y, row in enumerate(input.splitlines()):
         for x, thing in enumerate(row):
             platform[x, y] = thing
-    width, height = map(lambda x: x + 1, max(platform))
+    width, height = (x + 1 for x in max(platform))
     return platform, width, height
 
 
@@ -101,13 +101,15 @@ O.#..O.#.#
 #OO..#...."""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 136
 
 
 def build_grid(
-    grid: dict[tuple[int, int], str], start: tuple[int, int] | None = None, end: tuple[int, int] | None = None
+    grid: dict[tuple[int, int], str],
+    start: tuple[int, int] | None = None,
+    end: tuple[int, int] | None = None,
 ) -> str:
     _start = start or min(grid)
     _end = end or max(grid)
@@ -139,7 +141,7 @@ def test_cycle():
     assert result == answer
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 64
 
@@ -150,13 +152,13 @@ def test_part_2_3_rounds():
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 105623
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 98029
 

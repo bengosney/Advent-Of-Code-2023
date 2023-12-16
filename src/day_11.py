@@ -48,12 +48,12 @@ def part_2(input: str, expansion: int = 1_000_000) -> int:
     expansion -= 1
     expansions_x: list[int] = []
     for x in range(max_x):
-        if all([sky[(x, y)] == "." for y in range(max_y)]):
+        if all(sky[(x, y)] == "." for y in range(max_y)):
             expansions_x.append(x + (len(expansions_x) * expansion))
 
     expansions_y: list[int] = []
     for y in range(max_y):
-        if all([sky[(x, y)] == "." for x in range(max_x)]):
+        if all(sky[(x, y)] == "." for x in range(max_x)):
             expansions_y.append(y + (len(expansions_y) * expansion))
 
     def expand(point: Point) -> Point:
@@ -89,7 +89,7 @@ def get_example_input() -> str:
 #...#....."""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 374
 
@@ -106,7 +106,7 @@ def test_rotate():
     assert rotate(test_str.strip("\n")) == expected.strip("\n")
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input, 2) == 374
     assert part_2(test_input, 10) == 1030
@@ -114,13 +114,13 @@ def test_part_2():
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 10231178
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 622120986954
 

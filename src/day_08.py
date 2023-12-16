@@ -83,24 +83,24 @@ XXX = (XXX, XXX)
 """
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input_one()
     assert part_1(test_input) == 2
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input_two()
     assert part_2(test_input) == 6
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 21797
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 23977527174353
 

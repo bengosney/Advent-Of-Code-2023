@@ -27,7 +27,7 @@ class Game:
                 self.red <= other.red,
                 self.green <= other.green,
                 self.blue <= other.blue,
-            ]
+            ],
         )
 
     @property
@@ -52,12 +52,12 @@ def part_1(input: str) -> int:
     games = parse(input)
     limit = Limit(12, 13, 14)
     filtered_games = filter(lambda game: game <= limit, games)
-    return sum(map(lambda g: int(g.id), filtered_games))
+    return sum(int(g.id) for g in filtered_games)
 
 
 def part_2(input: str) -> int:
     games = list(parse(input))
-    return sum(map(lambda g: g.power, games))
+    return sum(g.power for g in games)
 
 
 # -- Tests
@@ -71,24 +71,24 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"""
 
 
-def test_part_1():
+def test_part_1() -> None:
     test_input = get_example_input()
     assert part_1(test_input) == 8
 
 
-def test_part_2():
+def test_part_2() -> None:
     test_input = get_example_input()
     assert part_2(test_input) == 2286
 
 
 @no_input_skip
-def test_part_1_real():
+def test_part_1_real() -> None:
     real_input = read_input(__file__)
     assert part_1(real_input) == 1867
 
 
 @no_input_skip
-def test_part_2_real():
+def test_part_2_real() -> None:
     real_input = read_input(__file__)
     assert part_2(real_input) == 84538
 
