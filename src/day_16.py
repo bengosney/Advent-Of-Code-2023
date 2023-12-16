@@ -1,6 +1,5 @@
 # Standard Library
-from collections import defaultdict, deque
-from functools import partial
+from collections import deque
 from typing import Deque
 
 # First Party
@@ -32,10 +31,7 @@ def energize(start: Vec2, direction: Vec2, grid: dict[Vec2, str]) -> int:
 
     while len(beams):
         current, direction = beams.pop()
-        while grid[current] != "!":
-            if grid[current] == "!" or (current, direction) in history:
-                break
-
+        while current in grid and (current, direction) not in history:
             history.add((current, direction))
 
             if grid[current] == "|" and direction in [LEFT, RIGHT]:
@@ -53,16 +49,13 @@ def energize(start: Vec2, direction: Vec2, grid: dict[Vec2, str]) -> int:
                 direction = mirror_map_bs[direction]
 
             energized.add(current)
-            if grid[current] == ".":
-                grid[current] = "*"
-
             current = add(current, direction)
 
     return len(energized)
 
 
 def part_1(input: str) -> int:
-    grid: dict[Vec2, str] = defaultdict(lambda: "!")
+    grid: dict[Vec2, str] = {}
     for y, line in enumerate(input.splitlines()):
         for x, c in enumerate(line):
             grid[x, y] = c
@@ -71,27 +64,19 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    grid: dict[Vec2, str] = defaultdict(lambda: "!")
+    grid: dict[Vec2, str] = {}
     for y, line in enumerate(input.splitlines()):
         for x, c in enumerate(line):
             grid[x, y] = c
 
-    scores: list[int] = []
-
     starts: list[tuple[Vec2, Vec2]] = []
     max_x, max_y = max(grid)
-    for x in range(max_x):
-        starts.append(((x, 0), DOWN))
-        starts.append(((x, max_y), UP))
-    for y in range(max_y):
-        starts.append(((0, y), RIGHT))
-        starts.append(((max_x, y), LEFT))
+    starts.extend([((x, 0), DOWN) for x in range(max_x)])
+    starts.extend([((x, max_y), UP) for x in range(max_x)])
+    starts.extend([((0, y), RIGHT) for y in range(max_y)])
+    starts.extend([((max_x, y), LEFT) for y in range(max_y)])
 
-    _energize = partial(energize, grid=grid)
-    for start in starts:
-        scores.append(_energize(*start))
-
-    return max(scores)
+    return max([energize(start, direction, grid) for start, direction in starts])
 
 
 # -- Tests
