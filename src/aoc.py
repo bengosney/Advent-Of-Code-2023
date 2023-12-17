@@ -46,8 +46,8 @@ class DayType(str, Enum):
     DAY_15 = "day_15"
     DAY_16 = "day_16"
     DAY_17 = "day_17"
-    DAY_18 = "day_18"
-    # [[[end]]]
+    # [[[end]]] 
+
 
 class SortType(str, Enum):
     CALLS = "calls"
