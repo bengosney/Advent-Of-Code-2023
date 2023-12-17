@@ -1,4 +1,4 @@
-GridType = dict[tuple[int, int], str]
+GridType = dict[tuple[int, int], str | int]
 
 
 def draw_grid(grid: GridType, missing: str = "."):
