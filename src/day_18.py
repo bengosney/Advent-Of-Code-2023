@@ -1,16 +1,9 @@
-# First Party
-from utils import read_input, draw_grid, no_input_skip  # noqa
+import re
+from collections import Counter, defaultdict, deque
 
-from collections import defaultdict, deque, Counter
+from utils import no_input_skip, read_input, time_limit
 
 Vec2 = tuple[int, int]
-
-dmap: dict[str, Vec2] = {
-    "U": (0, -1),
-    "D": (0, 1),
-    "L": (-1, 0),
-    "R": (1, 0),
-}
 
 
 def add(a: Vec2, b: Vec2) -> Vec2:
@@ -29,6 +22,13 @@ def around(p: Vec2) -> list[Vec2]:
 def part_1(puzzle: str) -> int:
     grid: dict[Vec2, str] = defaultdict(lambda: ".")
 
+    dmap: dict[str, Vec2] = {
+        "U": (0, -1),
+        "D": (0, 1),
+        "L": (-1, 0),
+        "R": (1, 0),
+    }
+
     position = (0, 0)
     grid[position] = "#"
     for line in puzzle.splitlines():
@@ -46,15 +46,44 @@ def part_1(puzzle: str) -> int:
             if grid[p] == ".":
                 fill.append(p)
 
-    draw_grid(grid)
-
     counts = Counter(grid.values()).most_common()
 
     return counts[0][1]
 
 
 def part_2(puzzle: str) -> int:
-    pass
+    grid: dict[Vec2, str] = defaultdict(lambda: ".")
+    regex = re.compile(r"(\w{5})(\d)")
+
+    dmap: list[Vec2] = [
+        (1, 0),
+        (0, 1),
+        (-1, 0),
+        (0, -1),
+    ]
+
+    position = (0, 0)
+    grid[position] = "#"
+    for match in regex.finditer(puzzle):
+        hex_distance, direction_num = match.groups()
+        direction = dmap[int(direction_num)]
+        distance = int(hex_distance, 16)
+
+        for _ in range(int(distance)):
+            position = add(position, direction)
+            grid[position] = "#"
+
+    fill: deque[Vec2] = deque([(1, 1)])
+    while fill:
+        fill_pos = fill.pop()
+        grid[fill_pos] = "#"
+        for p in around(fill_pos):
+            if grid[p] == ".":
+                fill.append(p)
+
+    counts = Counter(grid.values()).most_common()
+
+    return counts[0][1]
 
 
 # -- Tests
@@ -82,15 +111,16 @@ def test_part_1():
     assert part_1(test_input) == 62
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    with time_limit(10):
+        assert part_2(test_input) == 952408144115
 
 
-# @no_input_skip
-# def test_part_1_real():
-#     real_input = read_input(__file__)
-#     assert part_1(real_input) is not None
+@no_input_skip
+def test_part_1_real():
+    real_input = read_input(__file__)
+    assert part_1(real_input) == 35991
 
 
 # @no_input_skip
