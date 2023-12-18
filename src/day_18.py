@@ -1,5 +1,6 @@
 import re
 from collections import Counter, defaultdict, deque
+from itertools import pairwise
 
 from utils import no_input_skip, read_input, time_limit
 
@@ -8,6 +9,10 @@ Vec2 = tuple[int, int]
 
 def add(a: Vec2, b: Vec2) -> Vec2:
     return a[0] + b[0], a[1] + b[1]
+
+
+def mul(a: Vec2, b: Vec2) -> Vec2:
+    return a[0] * b[0], a[1] * b[1]
 
 
 def around(p: Vec2) -> list[Vec2]:
@@ -51,6 +56,13 @@ def part_1(puzzle: str) -> int:
     return counts[0][1]
 
 
+def internal_area(path: list[Vec2]) -> int:
+    length = 0
+    for (x1, y1), (x2, y2) in pairwise(path + path[:1]):
+        length += (x1 * y2) - (y1 * x2)
+    return abs(length) // 2
+
+
 def part_2(puzzle: str) -> int:
     grid: dict[Vec2, str] = defaultdict(lambda: ".")
     regex = re.compile(r"(\w{5})(\d)")
@@ -63,27 +75,21 @@ def part_2(puzzle: str) -> int:
     ]
 
     position = (0, 0)
+    path: list[Vec2] = [position]
+    length = 0
     grid[position] = "#"
     for match in regex.finditer(puzzle):
         hex_distance, direction_num = match.groups()
         direction = dmap[int(direction_num)]
         distance = int(hex_distance, 16)
+        length += distance
 
-        for _ in range(int(distance)):
-            position = add(position, direction)
-            grid[position] = "#"
+        move = mul(direction, (distance, distance))
+        position = add(position, move)
 
-    fill: deque[Vec2] = deque([(1, 1)])
-    while fill:
-        fill_pos = fill.pop()
-        grid[fill_pos] = "#"
-        for p in around(fill_pos):
-            if grid[p] == ".":
-                fill.append(p)
+        path.append(position)
 
-    counts = Counter(grid.values()).most_common()
-
-    return counts[0][1]
+    return internal_area(path) + length // 2 + 1
 
 
 # -- Tests
@@ -134,5 +140,6 @@ def test_part_1_real():
 if __name__ == "__main__":
     real_input = read_input(__file__)
 
+    part_2(get_example_input())
     print(f"Part1: {part_1(real_input)}")
     print(f"Part2: {part_2(real_input)}")
