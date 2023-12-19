@@ -46,7 +46,8 @@ class DayType(str, Enum):
     DAY_15 = "day_15"
     DAY_16 = "day_16"
     DAY_18 = "day_18"
-    # [[[end]]] (checksum: 1fb5b819a8be2f8ae440f3f59ffd4d71)
+    DAY_19 = "day_19"
+    # [[[end]]] (checksum: 90a0c9e27fdd8cb82fe75d56d0378acc)
 
 
 class SortType(str, Enum):
@@ -85,7 +86,7 @@ def time_it(day: str, iterations: int = 1, progress: Callable[..., Any] = lambda
 
 
 @app.command()
-def benchmark(iterations: int = 10, days: list[str] | None = None) -> None:
+def benchmark(iterations: int = 10, days: list[str] = []) -> None:
     table = Table(title=f"AOC 2023 - Timings\n({iterations:,} iterations)")
 
     table.add_column("Day", justify="center", style="bold")
@@ -140,7 +141,7 @@ def day_from_name(file_name: str) -> int:
 
 
 @app.command()
-def answers(days: list[int] | None = None) -> None:
+def answers(days: list[int] = []) -> None:
     table = Table(title="Advent of Code 2023 - Answers")
 
     table.add_column("Day", justify="center", style="bold")
