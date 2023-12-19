@@ -1,5 +1,7 @@
 # First Party
+import operator
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Self
 
@@ -7,26 +9,23 @@ from utils import no_input_skip, read_input
 
 Part = dict[str, int]
 
+valid_ops = {"<": operator.lt, ">": operator.gt}
+
 
 @dataclass
 class Workflow:
     var: str
-    op: str
+    op: Callable[[int, int], bool]
     val: int
 
     valid: str | Self
     invalid: str | Self
 
     def test(self, part: Part) -> bool:
-        if self.op == ">":
-            return part[self.var] > self.val
-        return part[self.var] < self.val
+        return self.op(part[self.var], self.val)
 
     def process(self, part: Part, workflows: dict[str, Self]) -> str:
-        if self.test(part):
-            result = self.valid
-        else:
-            result = self.invalid
+        result = self.valid if self.test(part) else self.invalid
 
         if isinstance(result, Workflow):
             result = result.process(part, workflows)
@@ -47,7 +46,7 @@ class Workflow:
         if "," in rest:
             rest = cls.parse(rest)
 
-        return cls(var, op, val, action, rest)
+        return cls(var, valid_ops[op], val, action, rest)
 
 
 def parse(puzzle: str) -> tuple[dict[str, Workflow], list[Part]]:
