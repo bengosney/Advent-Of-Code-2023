@@ -13,15 +13,24 @@ class Node(NamedTuple):
     position: Vec2
     direction: int
     chain: int
-    history: list[Vec2]
+    history: list[tuple[Vec2, int]]
 
     def __repr__(self) -> str:
         return str(self.loss)
 
+    def __len__(self) -> int:
+        return self.loss
 
+
+# [(1,0), (0,-1), (-1,0), (0,1)]
 def around(point: Vec2) -> tuple[Vec2, Vec2, Vec2, Vec2]:
     x, y = point
-    return ((x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1))
+    return (
+        (x + 1, y),
+        (x, y + 1),
+        (x - 1, y),
+        (x, y - 1),
+    )
 
 
 def part_1(puzzle: str) -> int:
@@ -38,8 +47,8 @@ def part_1(puzzle: str) -> int:
 
     while queue:
         node = heapq.heappop(queue)
-        key = (node.position, node.direction)  # , node.chain)
-        if key in visited:  # and best[key] <= node.loss:
+        key = (node.position, node.direction)
+        if key in visited and visited[key] <= node.loss:
             continue
         if node.position == end:
             dmap = [">", "v", "<", "^"]
@@ -53,9 +62,12 @@ def part_1(puzzle: str) -> int:
 
         # for e, d in enumerate([(node.direction - 1) % 4, node.direction, (node.direction + 1) % 4]):
         for d, neighbor in enumerate(neighbours):
-            if node.chain == 3 or neighbor not in grid:
+            if neighbor not in grid:
                 continue
 
+            chain = node.chain + 1 if node.direction == d else 1
+            if chain == 4:
+                continue
             if visited.get((neighbor, d), node.loss + 1) > node.loss:
                 heapq.heappush(
                     queue,
@@ -63,7 +75,7 @@ def part_1(puzzle: str) -> int:
                         node.loss + grid[neighbor],
                         neighbor,
                         d,
-                        node.chain + 1 if node.direction == d else 1,
+                        chain,
                         [*node.history, (node.position, node.direction)],
                     ),
                 )
